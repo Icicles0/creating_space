@@ -1,4 +1,4 @@
-package com.rae.creatingspace.content.rocket.engine;
+package com.rae.creatingspace.content.rocket.flight_recorder;
 
 import com.jozufozu.flywheel.api.Instancer;
 import com.jozufozu.flywheel.api.MaterialManager;
@@ -18,10 +18,5 @@ public class FlightRecorderInstance extends SingleRotatingInstance<FlightRecorde
         Direction facing = Direction.fromAxisAndDirection(axis, Direction.AxisDirection.POSITIVE);
 
         return getRotatingMaterial().getModel(PartialModelInit.MEMORY_ROLL, blockState,facing);
-    }
-
-    @Override
-    protected Direction.Axis getRotationAxis() {
-        return super.getRotationAxis();
     }
 }

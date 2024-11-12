@@ -23,7 +23,7 @@ import com.rae.creatingspace.content.rocket.engine.RocketEngineBlockEntity;
 import com.rae.creatingspace.content.rocket.engine.table.RocketEngineerTableBlockEntity;
 import com.rae.creatingspace.content.rocket.rocket_control.RocketControlsBlockEntity;
 import com.rae.creatingspace.legacy.client.renderer.blockentity.*;
-import com.rae.creatingspace.content.rocket.engine.FlightRecorderInstance;
+import com.rae.creatingspace.content.rocket.flight_recorder.FlightRecorderInstance;
 import com.rae.creatingspace.legacy.client.renderer.instance.OxygenSealerInstance;
 import com.rae.creatingspace.legacy.server.blockentities.*;
 import com.rae.creatingspace.legacy.server.blockentities.atmosphere.OxygenBlockEntity;
