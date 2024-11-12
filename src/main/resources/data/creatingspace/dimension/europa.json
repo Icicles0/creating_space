@@ -4,8 +4,45 @@
     "type": "minecraft:noise",
     "settings": "creatingspace:europa",
     "biome_source": {
-      "type": "minecraft:fixed",
-      "biome":"creatingspace:europa"
+      "type": "minecraft:multi_noise",
+      "biomes": [
+        {
+          "biome": "creatingspace:europa_surface",
+          "parameters": {
+            "temperature": [-2,-0.4],
+            "humidity": [-2, 2],
+            "continentalness": [-2, 2],
+            "erosion": [-2, 2],
+            "weirdness": [-2, 2],
+            "depth": [-2, 2],
+            "offset": 0
+          }
+        },
+        {
+          "biome": "creatingspace:europa_plains",
+          "parameters": {
+            "temperature": [-0.5, 0.5],
+            "humidity": [-2, 2],
+            "continentalness": [-2, 0.3],
+            "erosion": [-2, 2],
+            "weirdness": [-2, 2],
+            "depth": [-2, 2],
+            "offset": 0
+          }
+        },
+        {
+          "biome": "creatingspace:europa_volcanic_rift",
+          "parameters": {
+            "temperature": [0.6,2],
+            "humidity": [-2, 2],
+            "continentalness": [0.3, 2],
+            "erosion": [-2, 2],
+            "weirdness": [-2, 2],
+            "depth": [-2, 2],
+            "offset": 0
+          }
+        }
+      ]
     }
   }
 }

@@ -20,6 +20,9 @@ public class SurfaceSystemMixin {
     //the goal of this mixin is to allow pocket of water to be affected by the stone depth check normally
     //i2 represent the stone depth for the floor mod, it's not reset when there is water
     //+ tag because why not
+
+
+    boolean face;
     @Unique
     private BlockState cS_1_20_1$blockstate;
     @Unique
@@ -45,10 +48,10 @@ public class SurfaceSystemMixin {
                         WorldGenerationContext context, ChunkAccess chunkAccess, NoiseChunk noiseChunk, SurfaceRules.RuleSource ruleSource, CallbackInfo ci){
         cS_1_20_1$i2 = 0;
     }
-    @Inject(method = "buildSurface", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/material/FluidState;isEmpty()Z"))
+    @Inject(method = "buildSurface", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;isAir()Z"))
     public void deleteWaterInStoneDepth(RandomState randomState, BiomeManager biomeManager, Registry<Biome> biomeRegistry, boolean legacyNoise,
                                         WorldGenerationContext context, ChunkAccess chunkAccess, NoiseChunk noiseChunk, SurfaceRules.RuleSource ruleSource, CallbackInfo ci){
-        if (cS_1_20_1$blockstate.isAir() || (!cS_1_20_1$blockstate.getFluidState().isEmpty() && (TagsInit.CustomBiomeTags.SPECIAL_WATER_POCKET_HANDLING.matches(cS_1_20_1$holder)))){
+        if (cS_1_20_1$blockstate.isAir() || (!cS_1_20_1$blockstate.getFluidState().isEmpty() && TagsInit.CustomBiomeTags.SPECIAL_WATER_POCKET_HANDLING.matches(cS_1_20_1$holder))){
             cS_1_20_1$i2 = 0;
         }
         else {

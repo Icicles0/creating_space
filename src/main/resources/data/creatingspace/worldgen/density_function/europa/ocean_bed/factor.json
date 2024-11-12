@@ -16,168 +16,37 @@
           "argument2": {
             "type": "minecraft:spline",
             "spline": {
-              "coordinate": "creatingspace:europa/continents",
+              "coordinate": "creatingspace:europa/deepness",
               "points": [
                 {
-                  "location": -0.5,
+                  "location": -1,
                   "derivative": 0,
-                  "value": 3.95
+                  "value": 0
                 },
                 {
-                  "location": -0.2,
+                  "location": -0.3,
                   "derivative": 0,
-                  "value": {
-                    "coordinate": "creatingspace:europa/erosion",
-                    "points": [
-                      {
-                        "location": -0.5,
-                        "derivative": 0,
-                        "value": 4
-                      },
-                      {
-                        "location": -0.25,
-                        "derivative": 0,
-                        "value": 3.95
-                      },
-                      {
-                        "location": -0.1,
-                        "derivative": 0,
-                        "value": 3.95
-                      },
-                      {
-                        "location": 0.03,
-                        "derivative": 0,
-                        "value": 3.95
-                      },
-                      {
-                        "location": 0.45,
-                        "derivative": 0,
-                        "value": 3.6
-                      },
-                      {
-                        "location": 0.55,
-                        "derivative": 0,
-                        "value": 3.6
-                      }
-                    ]
-                  }
+                  "value": 0
                 },
                 {
-                  "location": -0.1,
+                  "location": 0,
                   "derivative": 0,
-                  "value": {
-                    "coordinate": "creatingspace:europa/erosion",
-                    "points": [
-                      {
-                        "location": -0.5,
-                        "derivative": 0,
-                        "value": 4.5
-                      },
-                      {
-                        "location": -0.25,
-                        "derivative": 0,
-                        "value": 4.5
-                      },
-                      {
-                        "location": -0.1,
-                        "derivative": 0,
-                        "value": 4.2
-                      },
-                      {
-                        "location": 0.03,
-                        "derivative": 0,
-                        "value": 4.2
-                      },
-                      {
-                        "location": 0.45,
-                        "derivative": 0,
-                        "value": 3.95
-                      },
-                      {
-                        "location": 0.55,
-                        "derivative": 0,
-                        "value": 3.8
-                      }
-                    ]
-                  }
+                  "value": 2
+                },
+                {
+                  "location": 0.2,
+                  "derivative": -1,
+                  "value": 1
                 },
                 {
                   "location": 0.3,
-                  "derivative": 0,
-                  "value": {
-                    "coordinate": "creatingspace:europa/erosion",
-                    "points": [
-                      {
-                        "location": -0.5,
-                        "derivative": 0,
-                        "value": 5.2
-                      },
-                      {
-                        "location": -0.25,
-                        "derivative": 0,
-                        "value": 5.5
-                      },
-                      {
-                        "location": -0.1,
-                        "derivative": 0,
-                        "value": 4.8
-                      },
-                      {
-                        "location": 0.03,
-                        "derivative": 0,
-                        "value": 4.5
-                      },
-                      {
-                        "location": 0.45,
-                        "derivative": 0,
-                        "value": 4.2
-                      },
-                      {
-                        "location": 0.55,
-                        "derivative": 0,
-                        "value": 3.8
-                      }
-                    ]
-                  }
+                  "derivative": 3,
+                  "value": 1
                 },
                 {
-                  "location": 0.6,
-                  "derivative": 0,
-                  "value": {
-                    "coordinate": "creatingspace:europa/erosion",
-                    "points": [
-                      {
-                        "location": -0.5,
-                        "derivative": 0,
-                        "value": 6
-                      },
-                      {
-                        "location": -0.25,
-                        "derivative": 0,
-                        "value": 6
-                      },
-                      {
-                        "location": -0.1,
-                        "derivative": 0,
-                        "value": 5.5
-                      },
-                      {
-                        "location": 0.03,
-                        "derivative": 0,
-                        "value": 4.5
-                      },
-                      {
-                        "location": 0.45,
-                        "derivative": 0,
-                        "value": 4
-                      },
-                      {
-                        "location": 0.55,
-                        "derivative": 0,
-                        "value": 3.7
-                      }
-                    ]
-                  }
+                  "location": 0.4,
+                  "derivative": -30,
+                  "value": 5.5
                 }
               ]
             }
