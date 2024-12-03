@@ -1,7 +1,7 @@
 package com.rae.creatingspace.content.rocket.rocket_control;
 
 import com.rae.creatingspace.init.ingameobject.BlockInit;
-import com.rae.creatingspace.server.contraption.RocketContraption;
+import com.rae.creatingspace.content.rocket.contraption.RocketContraption;
 import com.rae.creatingspace.content.rocket.RocketContraptionEntity;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.contraptions.AssemblyException;

@@ -1,4 +1,4 @@
-package com.rae.creatingspace.server.contraption;
+package com.rae.creatingspace.content.rocket.contraption;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

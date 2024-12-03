@@ -1,7 +1,7 @@
 package com.rae.creatingspace.init;
 
 import com.rae.creatingspace.CreatingSpace;
-import com.rae.creatingspace.server.contraption.RocketContraption;
+import com.rae.creatingspace.content.rocket.contraption.RocketContraption;
 import com.simibubi.create.content.contraptions.ContraptionType;
 
 

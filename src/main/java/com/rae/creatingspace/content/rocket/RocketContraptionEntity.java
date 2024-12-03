@@ -12,7 +12,7 @@ import com.rae.creatingspace.init.EntityDataSerializersInit;
 import com.rae.creatingspace.init.PacketInit;
 import com.rae.creatingspace.init.ingameobject.EntityInit;
 import com.rae.creatingspace.init.ingameobject.PropellantTypeInit;
-import com.rae.creatingspace.server.contraption.RocketContraption;
+import com.rae.creatingspace.content.rocket.contraption.RocketContraption;
 import com.rae.creatingspace.content.planets.CSDimensionUtil;
 import com.rae.creatingspace.legacy.utilities.CSNBTUtil;
 import com.rae.creatingspace.legacy.utilities.data.FlightDataHelper;
