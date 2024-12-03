@@ -67,6 +67,7 @@ import org.slf4j.Logger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.rae.creatingspace.init.ingameobject.SoundInit.ROCKET_LAUNCH;
@@ -377,9 +378,8 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
     private static HashMap<TagKey<Fluid>, Integer> getMassMap(RocketContraptionEntity rocketContraptionEntity ) {
 
         HashMap<TagKey<Fluid>, Integer> massForEachPropellant = new HashMap<>();
-        ArrayList<TagKey<Fluid>> allPropellantTags = new ArrayList<>();
         //remove the string from the consumableFluids
-        allPropellantTags.addAll(rocketContraptionEntity.consumableFluids.keySet());
+        ArrayList<TagKey<Fluid>> allPropellantTags = new ArrayList<>(rocketContraptionEntity.consumableFluids.keySet());
         IFluidHandler fluidHandler = rocketContraptionEntity.contraption.getSharedFluidTanks();
         int nbrOfTank = fluidHandler.getTanks();
 
@@ -417,6 +417,7 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
         for (BlockPos localPos:this.localPosOfFlightRecorders){
             StructureTemplate.StructureBlockInfo oldStructureInfo = this.contraption.getBlocks().get(localPos);
             CompoundTag nbt = oldStructureInfo.nbt();
+            assert nbt != null;
             nbt.put("lastAssemblyData",FlightDataHelper.RocketAssemblyData.toNBT(this.assemblyData));
             StructureTemplate.StructureBlockInfo newStructureInfo =
                     new StructureTemplate.StructureBlockInfo(oldStructureInfo.pos(),oldStructureInfo.state(),nbt);
@@ -505,7 +506,7 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
     }
 
     @Override
-    public boolean causeFallDamage(float p_146828_, float p_146829_, DamageSource damageSource) {
+    public boolean causeFallDamage(float p_146828_, float p_146829_, @NotNull DamageSource damageSource) {
         return false;
     }
 
@@ -520,7 +521,7 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
         if (position().get(Direction.Axis.Y) > 300  &&  !isReentry()){
 
 
-            ServerLevel destServerLevel = this.level().getServer().getLevel(
+            ServerLevel destServerLevel = Objects.requireNonNull(this.level().getServer()).getLevel(
                     ResourceKey.create(Registries.DIMENSION,
                             this.destination)
             );
@@ -628,7 +629,7 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
 
     @Nullable
     @Override
-    public Entity changeDimension(ServerLevel destLevel, ITeleporter teleporter) {
+    public Entity changeDimension(ServerLevel destLevel, @NotNull ITeleporter teleporter) {
         //rewrite so passengers get teleported with it
         if (!ForgeHooks.onTravelToDimension(this, destLevel.dimension())) return null;
         if (this.level() instanceof ServerLevel && !this.isRemoved()) {
@@ -671,8 +672,7 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
                                         }
                                     }
                                 }
-                                for (int i = 0; i < collidingEntities.size(); i++) {
-                                    Entity movedEntity = collidingEntities.get(i);
+                                for (Entity movedEntity : collidingEntities) {
                                     BlockPos posDif = movedEntity.getOnPos().subtract(previousRocketPos);
                                     movedEntity.moveTo(portalinfo.pos.x + posDif.getX(), portalinfo.pos.y + posDif.getY(), portalinfo.pos.z + posDif.getZ(), movedEntity.getYRot(), movedEntity.getXRot());
 
@@ -781,6 +781,7 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
 
     @OnlyIn(Dist.CLIENT)
     public static void handlePacket(RocketContraptionUpdatePacket packet) {
+        assert Minecraft.getInstance().level != null;
         Entity entity = Minecraft.getInstance().level.getEntity(packet.entityID);
         if (!(entity instanceof RocketContraptionEntity ce))
             return;
@@ -819,13 +820,14 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
         this.originDimension =
                 ResourceLocation.CODEC.parse(NbtOps.INSTANCE, compound.get("origin")).get().orThrow();
         this.schedule.read((CompoundTag) compound.get("Runtime"));
+        /*
         for (PropellantType combination : realPerTagFluidConsumption.keySet()) {
             for (TagKey<Fluid> fluid :
                     combination.getPropellantRatio().keySet()) {
                 RocketContraptionEntity.addToConsumableFluids(this, fluid);
 
             }
-        }
+        }*/
     }
 
     @Override
@@ -853,7 +855,7 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
     }
 
     @Override
-    public SoundSource getSoundSource() {
+    public @NotNull SoundSource getSoundSource() {
         return SoundSource.MASTER;
     }
 
