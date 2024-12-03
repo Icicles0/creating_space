@@ -1,5 +1,6 @@
 package com.rae.creatingspace.init.graphics;
 
+import com.rae.creatingspace.CreatingSpace;
 import com.rae.creatingspace.client.effects.CustomDimensionEffects;
 import com.rae.creatingspace.init.worldgen.DimensionInit;
 import net.minecraft.resources.ResourceLocation;
@@ -30,6 +31,10 @@ public class DimensionEffectInit {
         registerDimensionEffects(event,
                 DimensionInit.MARS_TYPE.location(),
                 new CustomDimensionEffects.MarsEffect(), true);
+
+        registerDimensionEffects(event,
+                CreatingSpace.resource("europa"),
+                new CustomDimensionEffects.EuropaEffect(), true);
     }
 
     private static void registerDimensionEffects(RegisterDimensionSpecialEffectsEvent event, ResourceLocation location, CustomDimensionEffects.GenericCelestialOrbitEffect effects, boolean renderSun) {

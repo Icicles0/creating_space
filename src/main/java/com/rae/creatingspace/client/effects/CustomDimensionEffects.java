@@ -35,7 +35,7 @@ public abstract class CustomDimensionEffects extends DimensionSpecialEffects {
     }
     @Override
     public Vec3 getBrightnessDependentFogColor(Vec3 vec, float brightness) {
-        return vec;
+        return vec.multiply((double)(brightness * 0.94F + 0.06F), (double)(brightness * 0.94F + 0.06F), (double)(brightness * 0.91F + 0.09F));
     }
     @Override
     public boolean isFoggyAt(int p_108874_, int p_108875_) {
@@ -109,6 +109,22 @@ public abstract class CustomDimensionEffects extends DimensionSpecialEffects {
         protected void renderAdditionalBody(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, BufferBuilder bufferbuilder, Camera camera, Matrix4f projectionMatrix) {
             super.renderAdditionalBody(level, ticks, partialTick, poseStack, bufferbuilder, camera, projectionMatrix);
             renderAstralBody(poseStack, bufferbuilder, EARTH_LOCATION, true, camera.getEntity().level().getTimeOfDay(partialTick) * 360.0F + 180F, 20, 100F);
+        }
+    }
+    @OnlyIn(Dist.CLIENT)
+    public static class EuropaEffect extends GenericCelestialOrbitEffect {
+        public EuropaEffect() {
+            super();
+        }
+
+        @Override
+        public Vec3 getBrightnessDependentFogColor(Vec3 vec, float brightness) {
+            return super.getBrightnessDependentFogColor(vec, brightness);
+        }
+
+        @Override
+        public boolean renderSky(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, Camera camera, Matrix4f projectionMatrix, boolean isFoggy, Runnable setupFog) {
+            return true;
         }
     }
 
