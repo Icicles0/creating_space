@@ -290,5 +290,6 @@ public class TagsInit extends AllTags {
         CustomItemTags.init();
         CustomEntityTag.init();
         CustomFluidTags.init();
+        CustomBiomeTags.init();
     }
 }

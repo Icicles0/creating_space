@@ -366,13 +366,14 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
     private static void addToConsumableFluids(RocketContraptionEntity rocketContraptionEntity, TagKey<Fluid> consumedFluid) {
         rocketContraptionEntity.consumableFluids.put(consumedFluid, new ArrayList<>());
         IFluidHandler fluidHandler = rocketContraptionEntity.contraption.getSharedFluidTanks();
-        int nbrOfTank = fluidHandler.getTanks();
-
-        for (int i = 0; i < nbrOfTank; i++) {
-            FluidStack fluidInTank = fluidHandler.getFluidInTank(i);
-            if (fluidInTank.getFluid().is(consumedFluid)) {
-                if (!rocketContraptionEntity.consumableFluids.get(consumedFluid).contains(fluidInTank.getFluid())) {
-                    rocketContraptionEntity.consumableFluids.get(consumedFluid).add(fluidInTank.getFluid());
+        if (fluidHandler != null) {
+            int nbrOfTank = fluidHandler.getTanks();
+            for (int i = 0; i < nbrOfTank; i++) {
+                FluidStack fluidInTank = fluidHandler.getFluidInTank(i);
+                if (fluidInTank.getFluid().is(consumedFluid)) {
+                    if (!rocketContraptionEntity.consumableFluids.get(consumedFluid).contains(fluidInTank.getFluid())) {
+                        rocketContraptionEntity.consumableFluids.get(consumedFluid).add(fluidInTank.getFluid());
+                    }
                 }
             }
         }
@@ -823,13 +824,14 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
         this.originDimension =
                 ResourceLocation.CODEC.parse(NbtOps.INSTANCE, compound.get("origin")).get().orThrow();
         this.schedule.read((CompoundTag) compound.get("Runtime"));
-        for (PropellantType combination : realPerTagFluidConsumption.keySet()) {
+        //inventory can be null at this point so don't do it unless necessary
+        /*for (PropellantType combination : realPerTagFluidConsumption.keySet()) {
             for (TagKey<Fluid> fluid :
                     combination.getPropellantRatio().keySet()) {
                 RocketContraptionEntity.addToConsumableFluids(this, fluid);
 
             }
-        }
+        }*/
     }
 
     @Override
