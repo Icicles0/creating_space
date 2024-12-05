@@ -519,7 +519,7 @@ public class NewDestinationScreen extends AbstractSimiContainerScreen<RocketMenu
             startStencil(matrixStack, leftPos + 16, topPos + 16, 220, 173);
             matrixStack.pushPose();
             matrixStack.translate(0, scrollOffset, 0);
-            if (i == 0 || entries.size() == 0)
+            if (i == 0 || entries.isEmpty())
                 UIRenderHelper.drawStretched(matrixStack, leftPos + 33, topPos + 16, 3, 10, -100,
                         AllGuiTextures.SCHEDULE_STRIP_LIGHT);
 
