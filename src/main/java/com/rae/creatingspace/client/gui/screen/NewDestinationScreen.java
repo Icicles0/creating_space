@@ -252,6 +252,12 @@ public class NewDestinationScreen extends AbstractSimiContainerScreen<RocketMenu
         for (int i = 0; i < schedule.entries.size(); i++)
             horizontalScrolls.add(LerpedFloat.linear()
                     .startWithValue(0));
+
+        IconButton launchButton = new IconButton(x + 214, y + 202, AllIcons.I_CONFIRM);
+        launchButton.withCallback(
+                this::onClose
+        );
+        addRenderableWidget(launchButton);
     }
 
 
