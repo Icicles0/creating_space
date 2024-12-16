@@ -33,10 +33,10 @@ public class ProjectorBlockRenderer extends SafeBlockEntityRenderer<ProjectorBlo
 
     @Override
     protected void renderSafe(ProjectorBlockEntity be, float partialTicks, PoseStack ms, MultiBufferSource bufferSource, int light, int overlay) {
-        PlanetsPosition.SkyPos sunPos = getSkyPos(CreatingSpace.resource("earth"), CreatingSpace.resource("sun"), Objects.requireNonNull(be.getLevel()).getGameTime()+ partialTicks);
+        PlanetsPosition.SkyPos sunPos = getSkyPos(CreatingSpace.resource("sun"), CreatingSpace.resource("sun"), Objects.requireNonNull(be.getLevel()).getGameTime()+ partialTicks);
 
-        PlanetsPosition.SkyPos earthPos = getSkyPos(CreatingSpace.resource("earth"), CreatingSpace.resource("earth"), Objects.requireNonNull(be.getLevel()).getGameTime()+ partialTicks);
-        PlanetsPosition.SkyPos moonPos = getSkyPos(CreatingSpace.resource("earth"), CreatingSpace.resource("moon"), Objects.requireNonNull(be.getLevel()).getGameTime()+ partialTicks);
+        PlanetsPosition.SkyPos earthPos = getSkyPos(CreatingSpace.resource("sun"), CreatingSpace.resource("earth"), Objects.requireNonNull(be.getLevel()).getGameTime()+ partialTicks);
+        PlanetsPosition.SkyPos moonPos = getSkyPos(CreatingSpace.resource("sun"), CreatingSpace.resource("moon"), Objects.requireNonNull(be.getLevel()).getGameTime()+ partialTicks);
         ms.pushPose();
         ms.translate(0.5,4,0.5);
 
