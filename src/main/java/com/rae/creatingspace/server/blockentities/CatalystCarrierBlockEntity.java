@@ -38,7 +38,7 @@ public class CatalystCarrierBlockEntity extends BasinOperatingBlockEntity {
     public int runningTicks;
     public int processingTicks;
     public boolean running;
-    private ItemStack catalyst;
+    //private ItemStack catalyst;
 
     public CatalystCarrierBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -233,13 +233,13 @@ public class CatalystCarrierBlockEntity extends BasinOperatingBlockEntity {
          */
     }
 
-    public ItemStack getCatalyst() {
+   /* public ItemStack getCatalyst() {
         return catalyst;
     }
 
     public void setCatalyst(ItemStack held) {
         /*catalyst = held.copy();
         notifyUpdate();
-         */
-    }
+
+    }*/
 }

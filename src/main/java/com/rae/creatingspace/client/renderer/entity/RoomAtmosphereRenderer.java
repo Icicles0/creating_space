@@ -2,10 +2,6 @@ package com.rae.creatingspace.client.renderer.entity;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
 import com.rae.creatingspace.CreatingSpace;
 import com.rae.creatingspace.configs.CSConfigs;
 import com.rae.creatingspace.server.entities.RoomAtmosphere;
@@ -18,10 +14,8 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
 public class RoomAtmosphereRenderer extends EntityRenderer<RoomAtmosphere> {
@@ -54,97 +48,6 @@ public class RoomAtmosphereRenderer extends EntityRenderer<RoomAtmosphere> {
         super.render(roomAtmosphere, cameraX, partialTick, poseStack, bufferSource, p_114604_);
     }
 
-    //TODO use Create's AABBOutline
-    private static void renderAABB(Vec3 pos, AABB aabb, @NotNull PoseStack poseStack, @NotNull MultiBufferSource bufferSource, int p_114604_) {
-        Vec3 aabbCenter = aabb.getCenter();
-        poseStack.pushPose();
-        float f = 0;
-        float f1 = 1;
-        float f2 = 0;
-        float f3 = 1;
-        poseStack.translate(aabbCenter.x() - pos.x(), aabbCenter.y() - pos.y(), aabb.getZsize() / 2 + aabbCenter.z() - pos.z());
-        VertexConsumer vertexconsumer = bufferSource.getBuffer(RENDER_TYPE);
-        PoseStack.Pose posestack$pose = poseStack.last();
-        Matrix4f matrix4f = posestack$pose.pose();
-        Matrix3f matrix3f = posestack$pose.normal();
-        vertex(vertexconsumer, matrix4f, matrix3f, -(float) (aabb.getXsize() / 2), -(float) (aabb.getYsize() / 2), 255, 255, 255, f, f3, p_114604_);
-        vertex(vertexconsumer, matrix4f, matrix3f, (float) (aabb.getXsize() / 2), -(float) (aabb.getYsize() / 2), 255, 255, 255, f1, f3, p_114604_);
-        vertex(vertexconsumer, matrix4f, matrix3f, (float) (aabb.getXsize() / 2), (float) (aabb.getYsize() / 2), 255, 255, 255, f1, f2, p_114604_);
-        vertex(vertexconsumer, matrix4f, matrix3f, -(float) (aabb.getXsize() / 2), (float) (aabb.getYsize() / 2), 255, 255, 255, f, f2, p_114604_);
-        poseStack.popPose();
-
-        poseStack.pushPose();
-        poseStack.translate(aabbCenter.x() - pos.x(), aabbCenter.y() - pos.y(), -aabb.getZsize() / 2 + aabbCenter.z() - pos.z());
-        vertexconsumer = bufferSource.getBuffer(RENDER_TYPE);
-        posestack$pose = poseStack.last();
-        matrix4f = posestack$pose.pose();
-        matrix3f = posestack$pose.normal();
-        vertex(vertexconsumer, matrix4f, matrix3f, -(float) (aabb.getXsize() / 2), -(float) (aabb.getYsize() / 2), 255, 255, 255, f, f3, p_114604_);
-        vertex(vertexconsumer, matrix4f, matrix3f, (float) (aabb.getXsize() / 2), -(float) (aabb.getYsize() / 2), 255, 255, 255, f1, f3, p_114604_);
-        vertex(vertexconsumer, matrix4f, matrix3f, (float) (aabb.getXsize() / 2), (float) (aabb.getYsize() / 2), 255, 255, 255, f1, f2, p_114604_);
-        vertex(vertexconsumer, matrix4f, matrix3f, -(float) (aabb.getXsize() / 2), (float) (aabb.getYsize() / 2), 255, 255, 255, f, f2, p_114604_);
-        poseStack.popPose();
-
-        poseStack.pushPose();
-        poseStack.translate(aabbCenter.x() - pos.x(), aabbCenter.y() - pos.y() - aabb.getYsize() / 2, aabbCenter.z() - pos.z());
-        poseStack.mulPose(Vector3f.XP.rotationDegrees(90.0F));
-        vertexconsumer = bufferSource.getBuffer(RENDER_TYPE);
-        posestack$pose = poseStack.last();
-        matrix4f = posestack$pose.pose();
-        matrix3f = posestack$pose.normal();
-        vertex(vertexconsumer, matrix4f, matrix3f, -((float) aabb.getXsize() / 2), -((float) aabb.getZsize() / 2), 255, 255, 255, f, f3, p_114604_);
-        vertex(vertexconsumer, matrix4f, matrix3f, (float) aabb.getXsize() / 2, -((float) aabb.getZsize() / 2), 255, 255, 255, f1, f3, p_114604_);
-        vertex(vertexconsumer, matrix4f, matrix3f, (float) aabb.getXsize() / 2, (float) aabb.getZsize() / 2, 255, 255, 255, f1, f2, p_114604_);
-        vertex(vertexconsumer, matrix4f, matrix3f, -((float) aabb.getXsize() / 2), (float) aabb.getZsize() / 2, 255, 255, 255, f, f2, p_114604_);
-        poseStack.popPose();
-
-        poseStack.pushPose();
-        poseStack.translate(aabbCenter.x() - pos.x(), aabbCenter.y() - pos.y() + aabb.getYsize() / 2, aabbCenter.z() - pos.z());
-        poseStack.mulPose(Vector3f.XP.rotationDegrees(90.0F));
-        vertexconsumer = bufferSource.getBuffer(RENDER_TYPE);
-        posestack$pose = poseStack.last();
-        matrix4f = posestack$pose.pose();
-        matrix3f = posestack$pose.normal();
-        vertex(vertexconsumer, matrix4f, matrix3f, -((float) aabb.getXsize() / 2), -((float) aabb.getZsize() / 2), 255, 255, 255, f, f3, p_114604_);
-        vertex(vertexconsumer, matrix4f, matrix3f, (float) aabb.getXsize() / 2, -((float) aabb.getZsize() / 2), 255, 255, 255, f1, f3, p_114604_);
-        vertex(vertexconsumer, matrix4f, matrix3f, (float) aabb.getXsize() / 2, (float) aabb.getZsize() / 2, 255, 255, 255, f1, f2, p_114604_);
-        vertex(vertexconsumer, matrix4f, matrix3f, -((float) aabb.getXsize() / 2), (float) aabb.getZsize() / 2, 255, 255, 255, f, f2, p_114604_);
-        poseStack.popPose();
-
-        poseStack.pushPose();
-        poseStack.translate(aabbCenter.x() - pos.x() - aabb.getXsize() / 2, aabbCenter.y() - pos.y(), aabbCenter.z() - pos.z());
-        poseStack.mulPose(Vector3f.YP.rotationDegrees(90.0F));
-        vertexconsumer = bufferSource.getBuffer(RENDER_TYPE);
-        posestack$pose = poseStack.last();
-        matrix4f = posestack$pose.pose();
-        matrix3f = posestack$pose.normal();
-        vertex(vertexconsumer, matrix4f, matrix3f, -((float) aabb.getZsize() / 2), -((float) aabb.getYsize() / 2), 255, 255, 255, f, f3, p_114604_);
-        vertex(vertexconsumer, matrix4f, matrix3f, (float) aabb.getZsize() / 2, -((float) aabb.getYsize() / 2), 255, 255, 255, f1, f3, p_114604_);
-        vertex(vertexconsumer, matrix4f, matrix3f, (float) aabb.getZsize() / 2, (float) aabb.getYsize() / 2, 255, 255, 255, f1, f2, p_114604_);
-        vertex(vertexconsumer, matrix4f, matrix3f, -((float) aabb.getZsize() / 2), (float) aabb.getYsize() / 2, 255, 255, 255, f, f2, p_114604_);
-        poseStack.popPose();
-
-        poseStack.pushPose();
-        poseStack.translate(aabbCenter.x() - pos.x() + aabb.getXsize() / 2, aabbCenter.y() - pos.y(), aabbCenter.z() - pos.z());
-        poseStack.mulPose(Vector3f.YP.rotationDegrees(90.0F));
-        vertexconsumer = bufferSource.getBuffer(RENDER_TYPE);
-        posestack$pose = poseStack.last();
-        matrix4f = posestack$pose.pose();
-        matrix3f = posestack$pose.normal();
-        vertex(vertexconsumer, matrix4f, matrix3f, -((float) aabb.getZsize() / 2), -((float) aabb.getYsize() / 2), 255, 255, 255, f, f3, p_114604_);
-        vertex(vertexconsumer, matrix4f, matrix3f, (float) aabb.getZsize() / 2, -((float) aabb.getYsize() / 2), 255, 255, 255, f1, f3, p_114604_);
-        vertex(vertexconsumer, matrix4f, matrix3f, (float) aabb.getZsize() / 2, (float) aabb.getYsize() / 2, 255, 255, 255, f1, f2, p_114604_);
-        vertex(vertexconsumer, matrix4f, matrix3f, -((float) aabb.getZsize() / 2), (float) aabb.getYsize() / 2, 255, 255, 255, f, f2, p_114604_);
-        poseStack.popPose();
-    }
-
-    private static void vertex(VertexConsumer vertexConsumer, Matrix4f matrix4f, Matrix3f p_114611_, float x, float y, int red, int green, int blue, float texX, float texY, int p_114619_) {
-        vertexConsumer.vertex(matrix4f, x, y, 0.0F).color(red, green, blue, 32)
-                .uv(texX, texY).overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(p_114619_)
-                .normal(p_114611_, 0.0F, 1.0F, 0.0F)
-                .endVertex();
-    }
     @Override
     public ResourceLocation getTextureLocation(RoomAtmosphere atmosphere) {
         return ROOM_ATMOSPHERE_LOCATION;

@@ -14,11 +14,9 @@ import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
@@ -41,7 +39,7 @@ public class CatalystCarrierRenderer extends KineticBlockEntityRenderer<Catalyst
                               int light, int overlay) {
         super.renderSafe(be, partialTicks, ms, buffer, light, overlay);
 
-        float renderedHeadOffset =
+        /*float renderedHeadOffset =
                 be.getRenderedHeadOffset(partialTicks);
         ItemStack catalyst = be.getCatalyst();
         if (catalyst != null) {
@@ -53,12 +51,14 @@ public class CatalystCarrierRenderer extends KineticBlockEntityRenderer<Catalyst
                                 catalyst.getItemHolder().unwrapKey().orElseThrow().location().getPath() + ".png"), buffer);
                 ms.popPose();
             }
-        }
+        }*/
 
         if (Backend.canUseInstancing(be.getLevel()))
             return;
 
         BlockState blockState = be.getBlockState();
+        float renderedHeadOffset =
+                be.getRenderedHeadOffset(partialTicks);
 
         SuperByteBuffer headRender = CachedBufferer.partialFacing(PartialModelInit.CATALYST_CARRIER_HEAD, blockState,
                 blockState.getValue(HORIZONTAL_FACING));
@@ -72,7 +72,7 @@ public class CatalystCarrierRenderer extends KineticBlockEntityRenderer<Catalyst
         return shaft(getRotationAxisOf(be));
     }
 
-    private void renderCatalystFromTexture(PoseStack stack, ResourceLocation texLocation, MultiBufferSource buffer) {
+    /*private void renderCatalystFromTexture(PoseStack stack, ResourceLocation texLocation, MultiBufferSource buffer) {
         ModelPart catalyst = createCatalyst();
         //catalyst.render(stack, buffer.getBuffer(RenderType.entitySolid(texLocation)), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
     }
@@ -87,5 +87,5 @@ public class CatalystCarrierRenderer extends KineticBlockEntityRenderer<Catalyst
                 PartPose.offset(16.0F, -9.0F, 0));
 
         return bone.bake(16, 16);
-    }
+    }*/
 }

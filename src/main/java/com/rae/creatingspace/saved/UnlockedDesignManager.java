@@ -13,6 +13,7 @@ import net.minecraftforge.network.PacketDistributor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class UnlockedDesignManager {
     private static UnlockabledDesignSavedData savedData;
@@ -98,12 +99,12 @@ public class UnlockedDesignManager {
 
     public static void playerLogin(Player player) {
         if (player instanceof ServerPlayer serverPlayer) {
-            savedData = UnlockabledDesignSavedData.loadData(serverPlayer.getServer());
-            if (!savedData.unlockedExhaustType.containsKey(serverPlayer.getStringUUID())) {
+            savedData = UnlockabledDesignSavedData.loadData(Objects.requireNonNull(serverPlayer.getServer()));
+            if (!savedData.unlockedExhaustType.containsKey(serverPlayer.getStringUUID()) || savedData.unlockedExhaustType.get(serverPlayer.getStringUUID()).isEmpty()) {
                 savedData.unlockedExhaustType.put(serverPlayer.getStringUUID(), new ArrayList<>(List.of(CreatingSpace.resource("bell_nozzle"))));
                 savedData.setDirty();
             }
-            if (!savedData.unlockedPowerPackType.containsKey(serverPlayer.getStringUUID())) {
+            if (!savedData.unlockedPowerPackType.containsKey(serverPlayer.getStringUUID()) || savedData.unlockedPowerPackType.get(serverPlayer.getStringUUID()).isEmpty()) {
                 savedData.unlockedPowerPackType.put(serverPlayer.getStringUUID(), new ArrayList<>(List.of(CreatingSpace.resource("open_cycle"))));
                 savedData.setDirty();
             }

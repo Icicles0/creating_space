@@ -318,8 +318,9 @@ public class RoomAtmosphere extends Entity {
     }
 
     public void consumeO2() {
-        if (entityData.get(O2_AMOUNT) >= CSConfigs.SERVER.livingO2Consumption.get()) {
-            entityData.set(O2_AMOUNT,entityData.get(O2_AMOUNT) - CSConfigs.SERVER.livingO2Consumption.get());
+        Integer amount = entityData.get(O2_AMOUNT);
+        if (amount >= CSConfigs.SERVER.livingO2Consumption.get()) {
+            entityData.set(O2_AMOUNT, amount - CSConfigs.SERVER.livingO2Consumption.get());
         }
     }
 

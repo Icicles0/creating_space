@@ -111,11 +111,6 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
     public HashMap<TagKey<Fluid>, ArrayList<Fluid>> consumableFluids = new HashMap<>();//
     private HashMap<String, BlockPos> initialPosMap;
     public RocketScheduleRuntime schedule;
-    /*public static final EntityDataAccessor<Boolean> REENTRY_ENTITY_DATA_ACCESSOR =
-            SynchedEntityData.defineId(RocketContraptionEntity.class, EntityDataSerializers.BOOLEAN);
-    //used to now if the rocket need to move or not ( just assemble or finished the list of instruction)
-    public static final EntityDataAccessor<Boolean> RUNNING_ENTITY_DATA_ACCESSOR =
-            SynchedEntityData.defineId(RocketContraptionEntity.class, EntityDataSerializers.BOOLEAN);*/
     public static final EntityDataAccessor<RocketStatus> STATUS_DATA_ACCESSOR =
             SynchedEntityData.defineId(RocketContraptionEntity.class, EntityDataSerializersInit.STATUS_SERIALIZER);
 
@@ -296,7 +291,7 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
         rocketContraptionEntity.assemblyData = assemblyData;
         if (CSConfigs.COMMON.additionalLogInfo.get()) {
             CreatingSpace.LOGGER.info("determining if the rocket can go :");
-            CreatingSpace.LOGGER.info(assemblyData);
+            CreatingSpace.LOGGER.info(assemblyData.toString());
         }
         //rocketContraptionEntity.failedToLaunch = assemblyData.hasFailed();//just for the fluids
 
@@ -381,9 +376,8 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
     private static HashMap<TagKey<Fluid>, Integer> getMassMap(RocketContraptionEntity rocketContraptionEntity ) {
 
         HashMap<TagKey<Fluid>, Integer> massForEachPropellant = new HashMap<>();
-        ArrayList<TagKey<Fluid>> allPropellantTags = new ArrayList<>();
         //remove the string from the consumableFluids
-        allPropellantTags.addAll(rocketContraptionEntity.consumableFluids.keySet());
+        ArrayList<TagKey<Fluid>> allPropellantTags = new ArrayList<>(rocketContraptionEntity.consumableFluids.keySet());
         IFluidHandler fluidHandler = rocketContraptionEntity.contraption.getSharedFluidTanks();
         int nbrOfTank = fluidHandler.getTanks();
 
@@ -675,8 +669,7 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
                                         }
                                     }
                                 }
-                                for (int i = 0; i < collidingEntities.size(); i++) {
-                                    Entity movedEntity = collidingEntities.get(i);
+                                for (Entity movedEntity : collidingEntities) {
                                     BlockPos posDif = movedEntity.getOnPos().subtract(previousRocketPos);
                                     movedEntity.moveTo(portalinfo.pos.x + posDif.getX(), portalinfo.pos.y + posDif.getY(), portalinfo.pos.z + posDif.getZ(), movedEntity.getYRot(), movedEntity.getXRot());
 
@@ -786,6 +779,7 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
 
     @OnlyIn(Dist.CLIENT)
     public static void handlePacket(RocketContraptionUpdatePacket packet) {
+        assert Minecraft.getInstance().level != null;
         Entity entity = Minecraft.getInstance().level.getEntity(packet.entityID);
         if (!(entity instanceof RocketContraptionEntity ce))
             return;

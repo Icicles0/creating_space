@@ -34,7 +34,6 @@ public class CraterCarver extends WorldCarver<CraterCarverConfig> {
 
     public boolean carve(CarvingContext context, CraterCarverConfig config, ChunkAccess chunk, Function<BlockPos, Holder<Biome>> posToBiome, RandomSource random, Aquifer aquiferSampler, ChunkPos pos, CarvingMask carvingMask) {
         //pos = center chunk pos
-
         int x = random.nextInt(16);
         int z = random.nextInt(16);
         int y = getHeightInInitialChunkIfClose(context, config, chunk, pos, x, z);

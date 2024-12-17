@@ -35,7 +35,7 @@ public class MechanicalElectrolyzerBlockEntity extends BasinOperatingBlockEntity
     public int runningTicks;
     public int processingTicks;
     public boolean running;
-    private ItemStack electrode;
+    //private ItemStack electrode;
 
     public MechanicalElectrolyzerBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -80,12 +80,12 @@ public class MechanicalElectrolyzerBlockEntity extends BasinOperatingBlockEntity
         runningTicks = compound.getInt("Ticks");
         super.read(compound, clientPacket);
 
-        CompoundTag electrode = compound.getCompound("electrode");
+        /*CompoundTag electrode = compound.getCompound("electrode");
         if (electrode.isEmpty()) {
             this.electrode = null;
         } else {
             this.electrode.deserializeNBT(electrode);
-        }
+        }*/
 
         if (clientPacket && hasLevel())
             getBasin().ifPresent(bte -> bte.setAreFluidsMoving(running && runningTicks <= 20));
@@ -98,17 +98,19 @@ public class MechanicalElectrolyzerBlockEntity extends BasinOperatingBlockEntity
         super.write(compound, clientPacket);
         compound.putBoolean("Running", running);
         compound.putInt("Ticks", runningTicks);
+        /*
         if (electrode != null) {
             compound.put("electrode", electrode.serializeNBT());
-        }
+        }*/
     }
 
     @Override
     public void writeSafe(CompoundTag tag) {
         super.writeSafe(tag);
+        /*
         if (electrode != null) {
             tag.put("electrode", electrode.serializeNBT());
-        }
+        }*/
     }
 
     @Override
@@ -246,7 +248,7 @@ public class MechanicalElectrolyzerBlockEntity extends BasinOperatingBlockEntity
     */
     }
 
-    public ItemStack getElectrode() {
+    /*public ItemStack getElectrode() {
         return electrode;
     }
 
@@ -257,7 +259,7 @@ public class MechanicalElectrolyzerBlockEntity extends BasinOperatingBlockEntity
         }
         electrode = held.copy();
         setChanged();
-         */
-    }
+
+    }*/
 
 }

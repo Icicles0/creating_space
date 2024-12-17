@@ -27,11 +27,5 @@ public class PonderInit {
         HELPER.forComponents(BlockInit.SMALL_ROCKET_ENGINE,BlockInit.BIG_ROCKET_ENGINE,BlockInit.ROCKET_CONTROLS,BlockInit.FLIGHT_RECORDER)
                 .addStoryBoard("rocket/rocket_building", RocketScene::rocketBuild)
                 .addStoryBoard("rocket/rocket_building",RocketScene::rocketDebug);
-
-        /*HELPER.forComponents(BlockInit.MECHANICAL_ELECTROLYZER)
-                .addStoryBoard("mechanical_electrolyzer/electrolysis", CustomProcessingScene::electrolysis);
-        HELPER.forComponents(BlockInit.CATALYST_CARRIER)
-                .addStoryBoard("catalyst_carrier/chemical", CustomProcessingScene::chemical);
-*/
     }
 }

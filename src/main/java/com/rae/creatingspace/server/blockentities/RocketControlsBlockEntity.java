@@ -132,6 +132,7 @@ public class RocketControlsBlockEntity extends SmartBlockEntity implements Namea
     public void tick() {
         super.tick();
 
+        assert this.level != null;
         if (!this.initialPosMap.containsKey(this.level.dimension().toString())) {
             this.initialPosMap.put(this.level.dimension().toString(),this.getBlockPos());
         }
