@@ -26,13 +26,23 @@ public class EngineFabricationBlueprint extends Item {
     @Override
     public void appendHoverText(ItemStack itemStack, @Nullable Level level, List<Component> components, TooltipFlag tooltipFlag) {
         //TODO make this method static somewhere (repetition for the engine, for the engine blueprint then for every item)
+        appendRecipeAndEngineInfo(itemStack, components);
+        super.appendHoverText(itemStack, level, components, tooltipFlag);
+    }
+
+    public static void appendRecipeAndEngineInfo(ItemStack itemStack, List<Component> components) {
         CompoundTag recipeData = itemStack.getTagElement("engineRecipeData");
         try {
             if (recipeData != null) {
-                int size = recipeData.getInt("size");
-                int materialLevel = recipeData.getInt("materialLevel");
-                components.add(Component.literal("size : " + size));
-                components.add(Component.literal("materialLevel : " + materialLevel));
+                if (recipeData.contains("size")){
+                    int size = recipeData.getInt("size");
+                    components.add(Component.literal("size : " + size));
+
+                }
+                if (recipeData.contains("materialLevel")) {
+                    int materialLevel = recipeData.getInt("materialLevel");
+                    components.add(Component.literal("materialLevel : " + materialLevel));
+                }
                 try {
                     ResourceLocation exhaustPackType = ResourceLocation.CODEC.parse(NbtOps.INSTANCE, recipeData.get("exhaustPackType")).get().orThrow();
                     ResourceLocation powerPackType = ResourceLocation.CODEC.parse(NbtOps.INSTANCE, recipeData.get("powerPackType")).get().orThrow();
@@ -55,7 +65,6 @@ public class EngineFabricationBlueprint extends Item {
         } catch (Exception ignored){
 
         }
-        super.appendHoverText(itemStack, level, components, tooltipFlag);
     }
 
     public ItemStack getBlueprintForEngine(int throatArea, int expansionRatio, int materialLevel, int thrust, float efficiency, ResourceLocation propellantTypeLocation, ResourceLocation exhaustPackTypeLocation, ResourceLocation powerPackTypeLocation) {
