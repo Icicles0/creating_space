@@ -1,6 +1,7 @@
 package com.rae.creatingspace.content.fluids.cassing;
 
 
+import com.rae.creatingspace.init.ingameobject.BlockEntityInit;
 import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.decoration.encasing.EncasedBlock;
@@ -89,6 +90,6 @@ public class IsolatedFluidPipe extends EncasedPipeBlock implements EncasedBlock 
 
     @Override
     public BlockEntityType<? extends FluidPipeBlockEntity> getBlockEntityType() {
-        return AllBlockEntityTypes.ENCASED_FLUID_PIPE.get();
+        return BlockEntityInit.ISOLATED_FLUID_PIPE.get();
     }
 }

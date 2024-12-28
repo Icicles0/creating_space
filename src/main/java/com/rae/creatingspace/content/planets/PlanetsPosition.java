@@ -88,9 +88,9 @@ public class PlanetsPosition {
         }
         public static Vec3 toXYZ(@Nonnull SkyPos pos,@Nonnull Vec3 center){
             return center.add(
-                    pos.radius * Math.sin(pos.phi)*Math.cos(pos.theta),
-                    pos.radius * Math.cos(pos.phi),
-                    pos.radius * Math.sin(pos.phi)*Math.sin(pos.theta));
+                    pos.radius * Math.cos(pos.phi)*Math.cos(pos.theta),
+                    pos.radius * Math.sin(pos.phi),
+                    pos.radius * Math.cos(pos.phi)*Math.sin(pos.theta));
         }
         public float getRadius() {
             return radius;

@@ -48,7 +48,7 @@ public class CSRenderTypes extends RenderStateShard {
                         .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
                         .setCullState(NO_CULL)
                         //.setLightmapState(RenderStateShard.NO_LIGHTMAP)
-                        //.setOverlayState(OVERLAY)
+                        .setOverlayState(OVERLAY)
                         //.setTexturingState(RenderStateShard.GLINT_TEXTURING)e
                         .setWriteMaskState(COLOR_WRITE)
                         //.setDepthTestState(NO_DEPTH_TEST)

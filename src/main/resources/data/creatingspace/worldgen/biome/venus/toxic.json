@@ -4,8 +4,8 @@
   "precipitation": "none",
   "temperature_modifier": "none",
   "effects": {
-    "sky_color": 11310368,
-    "fog_color": 13077258,
+    "sky_color": 16772633,
+    "fog_color": 11271961,
     "water_color": 1465109,
     "water_fog_color": 602630,
     "grass_color": 7298572,
@@ -21,21 +21,11 @@
   "spawn_costs": {},
   "carvers": {
     "air": [
-      "minecraft:canyon"
     ]
   },
   "features": [
-    [],
-    [],
-    [],
     [
-      "minecraft:spring_open",
-      "minecraft:patch_fire",
-      "minecraft:ore_magma",
-      "minecraft:spring_closed"
-    ],
-    [
-      "minecraft:spring_lava"
-    ]
+    "creatingspace:venus/sulfur_spike"
+      ]
   ]
 }

@@ -8,12 +8,12 @@
         {
           "location": -0.5,
           "derivative": 0,
-          "value": 0
+          "value": 0.4
         },
         {
           "location": 0,
           "derivative": 0,
-          "value": 0.5
+          "value": 2
         },
         {
           "location": 0.2,
@@ -23,12 +23,12 @@
         {
           "location": 0.45,
           "derivative": 0,
-          "value": 2
+          "value": 0.2
         },
         {
           "location": 0.8,
           "derivative": 0,
-          "value": 3
+          "value": 0
         }
       ]
     }

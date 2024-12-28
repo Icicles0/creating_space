@@ -17,6 +17,7 @@ import com.rae.creatingspace.content.recipes.chemical_synthesis.CatalystCarrierR
 import com.rae.creatingspace.content.recipes.electrolysis.ElectrolyzerInstance;
 import com.rae.creatingspace.content.recipes.electrolysis.MechanicalElectrolyserBlockRenderer;
 import com.rae.creatingspace.content.recipes.electrolysis.MechanicalElectrolyzerBlockEntity;
+import com.rae.creatingspace.content.rocket.engine.SuperRocketEngineBlockRenderer;
 import com.rae.creatingspace.content.rocket.flight_recorder.FlightRecorderBlockEntity;
 import com.rae.creatingspace.content.rocket.flight_recorder.FlightRecorderRenderer;
 import com.rae.creatingspace.content.rocket.engine.RocketEngineBlockEntity;
@@ -31,6 +32,8 @@ import com.rae.creatingspace.content.life_support.sealer.RoomPressuriserBlockEnt
 import com.rae.creatingspace.legacy.server.blockentities.atmosphere.SealerBlockEntity;
 import com.simibubi.create.content.fluids.pipes.FluidPipeBlockEntity;
 import com.simibubi.create.content.fluids.pump.PumpBlockEntity;
+import com.simibubi.create.content.fluids.pump.PumpCogInstance;
+import com.simibubi.create.content.fluids.pump.PumpRenderer;
 import com.simibubi.create.content.kinetics.base.ShaftInstance;
 import com.tterrag.registrate.util.entry.BlockEntityEntry;
 
@@ -92,6 +95,7 @@ public class BlockEntityInit {
 
     public static final BlockEntityEntry<RocketEngineBlockEntity.NbtDependent> NBT_DEPENDENT_ENGINE =
             REGISTRATE.blockEntity("rocket_engine", RocketEngineBlockEntity.NbtDependent::new)
+                    .renderer(() -> SuperRocketEngineBlockRenderer::new)
                     .validBlocks(BlockInit.ROCKET_ENGINE)
                     .register();
     public static final BlockEntityEntry<MechanicalElectrolyzerBlockEntity> ELECTROLIZER =
@@ -148,10 +152,10 @@ public class BlockEntityInit {
             .register();
 
     public static final BlockEntityEntry<PumpBlockEntity> ISOLATED_PUMP = REGISTRATE
-            .blockEntity("isolated_fluid_pipe", PumpBlockEntity::new)
-            //.instance(() -> PumpCogInstance::new)
+            .blockEntity("isolated_fluid_pump", PumpBlockEntity::new)
+            .instance(() -> PumpCogInstance::new)
             .validBlocks(BlockInit.ISOLATED_FLUID_PUMP)
-            //.renderer(() -> PumpRenderer::new)
+            .renderer(() -> PumpRenderer::new)
             .register();
 
 

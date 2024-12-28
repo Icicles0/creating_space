@@ -41,9 +41,9 @@ import com.simibubi.create.content.kinetics.BlockStressDefaults;
 import com.simibubi.create.content.processing.AssemblyOperatorBlockItem;
 import com.simibubi.create.foundation.data.*;
 import com.simibubi.create.foundation.item.ItemDescription;
+import com.simibubi.create.foundation.utility.Couple;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import net.minecraft.core.Registry;
-import net.minecraft.data.loot.BlockLoot;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -60,7 +60,6 @@ import net.minecraft.world.level.storage.loot.providers.nbt.ContextNbtProvider;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
 import net.minecraftforge.common.Tags;
-import org.checkerframework.checker.units.qual.C;
 
 import static com.rae.creatingspace.CreatingSpace.REGISTRATE;
 import static com.simibubi.create.AllInteractionBehaviours.interactionBehaviour;
@@ -102,8 +101,18 @@ public class BlockInit {
             //.model((c,p)-> p.withExistingParent(c.getName(), CreatingSpace.resource("block/small_rocket_engine")))
             .build()
             .register();
+    public static final BlockEntry<SuperRocketStructuralBlock> ENGINE_STRUCTURAL =
+            REGISTRATE.block("engine_structure", SuperRocketStructuralBlock::new)
+                    //.initialProperties(SharedProperties::copperMetal)
+                    .properties(p -> p.strength(1.0f))
+                    .blockstate((c, p) -> p.getVariantBuilder(c.get())
+                            .forAllStatesExcept(BlockStateGen.mapToAir(p), SmallRocketStructuralBlock.FACING))
+                    .properties(p -> p.color(MaterialColor.DIRT))
+                    .properties(BlockBehaviour.Properties::noOcclusion)
+                    .transform(axeOrPickaxe())
+                    .register();
     public static final BlockEntry<SuperEngineBlock> ROCKET_ENGINE = REGISTRATE
-            .block("rocket_engine", SuperEngineBlock::new)
+            .block("rocket_engine", p -> new SuperEngineBlock(p, ENGINE_STRUCTURAL.get()))
             //.initialProperties(SharedProperties::copperMetal)
             .properties(p -> p.strength(1.0f).dynamicShape().noOcclusion())
 
@@ -138,16 +147,7 @@ public class BlockInit {
                     .properties(BlockBehaviour.Properties::noOcclusion)
                     .transform(axeOrPickaxe())
                     .register();
-    public static final BlockEntry<SuperRocketStructuralBlock> ENGINE_STRUCTURAL =
-            REGISTRATE.block("engine_structure", SuperRocketStructuralBlock::new)
-                    //.initialProperties(SharedProperties::copperMetal)
-                    .properties(p -> p.strength(1.0f))
-                    .blockstate((c, p) -> p.getVariantBuilder(c.get())
-                            .forAllStatesExcept(BlockStateGen.mapToAir(p), SmallRocketStructuralBlock.FACING))
-                    .properties(p -> p.color(MaterialColor.DIRT))
-                    .properties(BlockBehaviour.Properties::noOcclusion)
-                    .transform(axeOrPickaxe())
-                    .register();
+
     public static final BlockEntry<SmallRocketStructuralBlock> SMALL_ENGINE_STRUCTURAL =
             REGISTRATE.block("small_engine_structure", SmallRocketStructuralBlock::new)
                     //.initialProperties(SharedProperties::copperMetal)
@@ -219,31 +219,6 @@ public class BlockInit {
             .transform(customItemModel())
             .register();
 
-    /*@Deprecated
-    public static final BlockEntry<ChemicalSynthesizerBlock> CHEMICAL_SYNTHESIZER = REGISTRATE.block(
-                    "chemical_synthesizer", ChemicalSynthesizerBlock::new)
-            .initialProperties(SharedProperties::copperMetal)
-            .properties(p -> p.strength(1.0f).noOcclusion().requiresCorrectToolForDrops())
-            .transform(axeOrPickaxe())
-            .blockstate((c, p) -> p.simpleBlock(c.getEntry(), p.models().getExistingFile(c.getId())))
-            .item()
-            //.properties(p-> p.tab(CreativeModeTabsInit.MACHINE_TAB))
-            .transform(customItemModel())
-            .register();
-
-    @Deprecated
-    public static final BlockEntry<LegacyMechanicalElectrolyzerBlock> LEGACY_MECHANICAL_ELECTROLYZER = REGISTRATE.block(
-                    "legacy_mechanical_electrolyzer", LegacyMechanicalElectrolyzerBlock::new)
-            .initialProperties(SharedProperties::copperMetal)
-            .properties(p -> p.strength(1.0f).noOcclusion().requiresCorrectToolForDrops())
-            .transform(BlockStressDefaults.setImpact(10000))
-            .transform(axeOrPickaxe())
-            .blockstate(BlockStateGen.horizontalBlockProvider(true))
-            .item()
-            //.properties(p-> p.tab(CreativeModeTabsInit.MACHINE_TAB))
-            .transform(customItemModel())
-            .onRegisterAfter(Registry.ITEM_REGISTRY, i -> ItemDescription.useKey(i, "block.creatingspace.legacy_mechanical_electrolyzer"))
-            .register();*/
     public static final BlockEntry<MechanicalElectrolyzerBlock> MECHANICAL_ELECTROLYZER = REGISTRATE.block(
                     "mechanical_electrolyzer", MechanicalElectrolyzerBlock::new)
             .initialProperties(SharedProperties::copperMetal)
@@ -398,21 +373,35 @@ public class BlockInit {
             .block("mars_stone", Block::new).initialProperties(() -> Blocks.STONE)
             .properties(p -> p.strength(1.0f).requiresCorrectToolForDrops())
             .item()
-            //.properties(p -> p.tab(CreativeModeTabsInit.MINERALS_TAB))
+            .properties(p -> p.tab(CreativeModeTabsInit.MINERALS_TAB))
             .build()
             .register();
     public static final BlockEntry<Block> MARS_REGOLITH = REGISTRATE
             .block("mars_regolith", Block::new).initialProperties(() -> Blocks.DIRT)
             .properties(p -> p.strength(1.0f).sound(SoundType.SNOW).color(MaterialColor.TERRACOTTA_RED))
             .item()
-            //.properties(p -> p.tab(CreativeModeTabsInit.MINERALS_TAB))
+            .properties(p -> p.tab(CreativeModeTabsInit.MINERALS_TAB))
             .build()
             .register();
     public static final BlockEntry<Block> MARS_SURFACE_REGOLITH = REGISTRATE
             .block("mars_surface_regolith", Block::new).initialProperties(() -> Blocks.DIRT)
             .properties(p -> p.strength(1.0f).sound(SoundType.SNOW).color(MaterialColor.TERRACOTTA_RED))
             .item()
-            //.properties(p -> p.tab(CreativeModeTabsInit.MINERALS_TAB))
+            .properties(p -> p.tab(CreativeModeTabsInit.MINERALS_TAB))
+            .build()
+            .register();
+    public static final BlockEntry<Block> HOT_STONE = REGISTRATE
+            .block("hot_stone", Block::new).initialProperties(() -> Blocks.STONE)
+            .properties(p -> p.lightLevel(s -> 4))
+            .item()
+            .properties(p -> p.tab(CreativeModeTabsInit.MINERALS_TAB))
+            .build()
+            .register();
+    public static final BlockEntry<Block> SULFURIC_STONE = REGISTRATE
+            .block("sulfuric_stone", Block::new).initialProperties(() -> Blocks.STONE)
+            .properties(p -> p.lightLevel(s -> 4))
+            .item()
+            .properties(p -> p.tab(CreativeModeTabsInit.MINERALS_TAB))
             .build()
             .register();
 
@@ -543,6 +532,7 @@ public class BlockInit {
             .properties(p -> p.strength(1.0f).requiresCorrectToolForDrops())
             .tag(BlockTags.NEEDS_IRON_TOOL)
             .transform(TagGen.pickaxeOnly())
+            .transform(BuilderTransformers.casing(() -> SpriteShiftInit.ISOLATE_CASING))
             .item()
             .properties(p -> p.tab(CreativeModeTabsInit.MACHINE_TAB))
             .build()
@@ -558,9 +548,6 @@ public class BlockInit {
                     .onRegister(CreateRegistrate.connectedTextures(() -> new EncasedCTBehaviour(SpriteShiftInit.ISOLATE_CASING)))
                     .onRegister(CreateRegistrate.casingConnectivity((block, cc) -> cc.make(block, SpriteShiftInit.ISOLATE_CASING,
                             (s, f) -> !s.getValue(EncasedPipeBlock.FACING_TO_PROPERTY_MAP.get(f)))))
-                    //.onRegisterAfter(ForgeRegistries.BLOCKS.getRegistryKey(), b -> EncasingRegistry.addVariant(FLUID_PIPE.get(), b))
-                    .onRegister(CreateRegistrate.blockModel(() -> PipeAttachmentModel::new))
-                    //.transform(EncasingRegistry.addVariantTo(AllBlocks.FLUID_PIPE))
                     .register();
 
     public static final BlockEntry<IsolatedFluidPump> ISOLATED_FLUID_PUMP =
@@ -568,13 +555,7 @@ public class BlockInit {
                     .initialProperties(SharedProperties::copperMetal)
                     .properties(p -> p.noOcclusion().color(MaterialColor.TERRACOTTA_LIGHT_GRAY))
                     .transform(axeOrPickaxe())
-                    //.blockstate(BlockStateGen.encasedPipe())
-                    //.onRegister(CreateRegistrate.connectedTextures(() -> new EncasedCTBehaviour(AllSpriteShifts.COPPER_CASING)))
-                    //.onRegister(CreateRegistrate.casingConnectivity((block, cc) -> cc.make(block, AllSpriteShifts.COPPER_CASING,
-                    //        (s, f) -> !s.getValue(EncasedPipeBlock.FACING_TO_PROPERTY_MAP.get(f)))))
-                    //.onRegisterAfter(ForgeRegistries.BLOCKS.getRegistryKey(), b -> EncasingRegistry.addVariant(FLUID_PIPE.get(), b))
                     .onRegister(CreateRegistrate.blockModel(() -> PipeAttachmentModel::new))
-                    //.transform(EncasingRegistry.addVariantTo(AllBlocks.FLUID_PIPE))
                     .register();
 
 

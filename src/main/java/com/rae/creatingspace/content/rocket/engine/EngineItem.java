@@ -1,9 +1,7 @@
 package com.rae.creatingspace.content.rocket.engine;
 
 import com.rae.creatingspace.content.rocket.engine.design.PropellantType;
-import com.rae.creatingspace.init.ingameobject.BlockInit;
 import com.rae.creatingspace.init.ingameobject.PropellantTypeInit;
-import com.rae.creatingspace.legacy.server.blocks.multiblock.SmallRocketStructuralBlock;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -33,24 +31,28 @@ public class EngineItem extends RocketEngineItem {
 
     @Override
     protected boolean canPlace(BlockPlaceContext pContext, BlockState pState) {
-        RocketEngineBlock main = (RocketEngineBlock) getBlock();
+        SuperEngineBlock main = (SuperEngineBlock) getBlock();
         Level lvl = pContext.getLevel();
         Direction facing = pContext.getClickedFace();
-        BlockPos mainPos = pContext.getClickedPos().offset(main.getOffset(facing));
+        BlockPos mainPos = pContext.getClickedPos().offset(main.getPlaceOffset(facing));
 
         return lvl.getBlockState(mainPos).isAir() && lvl.getBlockState(mainPos.below()).isAir();
     }
 
     @Override
     protected boolean placeBlock(BlockPlaceContext pContext, BlockState pState) {
-        RocketEngineBlock main = (RocketEngineBlock) getBlock();
+        SuperEngineBlock main = (SuperEngineBlock) getBlock();
         Level lvl = pContext.getLevel();
         Direction facing = pContext.getClickedFace();
-        BlockPos mainPos = pContext.getClickedPos().offset(main.getOffset(facing));
-        BlockState ghostState = BlockInit.ENGINE_STRUCTURAL.getDefaultState()
+        BlockPos mainPos = pContext.getClickedPos().offset(main.getPlaceOffset(facing));
+
+        /*BlockState ghostState = BlockInit.ENGINE_STRUCTURAL.getDefaultState()
                 .setValue(SmallRocketStructuralBlock.FACING, Direction.UP);
+        lvl.setBlock(mainPos.below(), ghostState, 11);*/
         lvl.setBlock(mainPos, pState, 11);
-        lvl.setBlock(mainPos.below(), ghostState, 11);
+        lvl.scheduleTick(mainPos,main,11);
+
+
         Player player = pContext.getPlayer();
         ItemStack itemstack = pContext.getItemInHand();
         BlockState blockstate1 = lvl.getBlockState(mainPos);

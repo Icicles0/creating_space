@@ -2,8 +2,8 @@
   "type": "minecraft:flat_cache",
   "argument": {
     "type": "minecraft:shifted_noise",
-    "noise": "creatingspace:venus/rivers",
-    "xz_scale": 2,
+    "noise": "creatingspace:venus/toxicity",
+    "xz_scale": 0.25,
     "y_scale": 0,
     "shift_x": "creatingspace:shift_x",
     "shift_y": 0,

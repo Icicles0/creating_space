@@ -258,8 +258,8 @@ public abstract class CustomDimensionEffects extends DimensionSpecialEffects {
                 bufferbuilder.vertex(matrix4f, -bodySize, bodyDistance, bodySize).uv(f15, f16).endVertex();
                 BufferUploader.drawWithShader(bufferbuilder.end());
             } else {
-                renderPlanet(bodyTexture, poseStack, LightTexture.FULL_SKY, bodySize, bodyDistance,  0, 0,rotationAngle+90);
-                renderAtmosphere(SuperRenderTypeBuffer.getInstance(), poseStack, new Color(0.1f, 0.2f, 0.6f, 0.3f), LightTexture.FULL_SKY, bodySize+10, bodyDistance,  0,0, rotationAngle+90);
+                //renderPlanet(bodyTexture, poseStack, LightTexture.FULL_SKY, bodySize, bodyDistance,  0, 0,rotationAngle+90);
+                //renderAtmosphere(SuperRenderTypeBuffer.getInstance(), poseStack, new Color(0.1f, 0.2f, 0.6f, 0.3f), LightTexture.FULL_SKY, bodySize+10, bodyDistance,  0,0, rotationAngle+90);
             }
             poseStack.popPose();
 

@@ -2,7 +2,9 @@ package com.rae.creatingspace.api.rendering;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
+import com.rae.creatingspace.content.planets.PlanetsPosition;
 import com.simibubi.create.foundation.render.SuperRenderTypeBuffer;
 import com.simibubi.create.foundation.utility.Color;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -17,22 +19,21 @@ import static com.rae.creatingspace.api.rendering.GeometryRendering.renderPolyTe
 
 public class PlanetsRendering {
     /**
-     * @param texture     the texture of the planet
-     * @param buffer      the buffer source
-     * @param matrixStack the stack
-     * @param packedLight the light
-     * @param distance    the distance from the player
-     * @param theta       the angle from the horizon
-     * @param phi         the angle from north
-     * @param alpha       the rotation of the planet
+     * @param texture        the texture of the planet
+     * @param buffer         the buffer source
+     * @param matrixStack    the stack
+     * @param packedLight    the light
+     * @param planetPos      spherical coord for the planet
+     * @param planetRotation rotation of the planet.
      */
     public static void renderPlanet(ResourceLocation texture, MultiBufferSource buffer, PoseStack matrixStack,
-                                    int packedLight, float size, float distance, float theta, float phi, float alpha) {
+                                    int packedLight, float size, PlanetsPosition.SkyPos planetPos, Quaternion planetRotation) {
         VertexConsumer planetBuffer =  buffer.getBuffer(CSRenderTypes.getTranslucentPlanet(texture));//buffer.getBuffer(RenderType.entityTranslucent(texture));
-        matrixStack.mulPose(Vector3f.YP.rotationDegrees(theta));
-        matrixStack.mulPose(Vector3f.XP.rotationDegrees(phi));
-        //matrixStack.mulPose(Vector3f.ZP.rotationDegrees(alpha));
-        matrixStack.translate(distance, 0, 0);
+
+        matrixStack.mulPose(planetRotation);
+
+        Vec3 translation = PlanetsPosition.SkyPos.toXYZ(planetPos, Vec3.ZERO);
+        matrixStack.translate(translation.x(),translation.y(), translation.z());
         float halfSize = size / 2.0F;
 
         // Define the eight vertices of the cube
@@ -63,32 +64,35 @@ public class PlanetsRendering {
         renderPolyTex(face4, uvs, planetBuffer, entry, packedLight);
         renderPolyTex(face5, uvs, planetBuffer, entry, packedLight);
         renderPolyTex(face6, uvs, planetBuffer, entry, packedLight);
-        matrixStack.translate(-distance, 0, 0);
-        //matrixStack.mulPose(Vector3f.ZP.rotationDegrees(-alpha));
-        matrixStack.mulPose(Vector3f.XP.rotationDegrees(-phi));
-        matrixStack.mulPose(Vector3f.YP.rotationDegrees(-theta));
+
+        //undo transformation
+
+        matrixStack.translate(-translation.x(),-translation.y(),- translation.z());
+        planetRotation.conj();
+        matrixStack.mulPose(planetRotation);
+        planetRotation.conj();
     }
 
     /**
      * to use when no access to the MultiSourceBuffer (DimensionSpecialEffect)
      */
     public static void renderPlanet(ResourceLocation texture, PoseStack matrixStack,
-                                    int packedLight, float size, float distance, float theta, float phi, float alpha) {
-        renderPlanet(texture, SuperRenderTypeBuffer.getInstance(), matrixStack, packedLight, size, distance, theta, phi, alpha);
+                                    int packedLight, float size, PlanetsPosition.SkyPos planetPos, Quaternion planetRotation) {
+        renderPlanet(texture, SuperRenderTypeBuffer.getInstance(), matrixStack, packedLight, size,planetPos,planetRotation);
 
     }
 
     public static void renderAtmosphere(MultiBufferSource buffer, PoseStack matrixStack, Color color,
-                                        int packedLight, float size, float distance, float theta, float phi, float alpha) {
+                                        int packedLight, float size, PlanetsPosition.SkyPos planetPos, Quaternion planetRotation) {
         VertexConsumer vertexBuilder = buffer.getBuffer(CSRenderTypes.getTranslucentAtmo());//RenderTypes.getGlowingTranslucent(AllSpecialTextures.BLANK.getLocation()));
-        matrixStack.mulPose(Vector3f.YP.rotationDegrees(theta));
-        matrixStack.mulPose(Vector3f.XP.rotationDegrees(phi));
-        //matrixStack.mulPose(Vector3f.ZP.rotationDegrees(alpha));
-        matrixStack.translate(distance, 0, 0);
+        matrixStack.mulPose(planetRotation);
+
+        Vec3 translation = PlanetsPosition.SkyPos.toXYZ(planetPos, Vec3.ZERO);
+        matrixStack.translate(translation.x(),translation.y(), translation.z());
         renderCube(vertexBuilder, matrixStack, Vec3.ZERO, packedLight, size, color);
-        matrixStack.translate(-distance, 0, 0);
-        //matrixStack.mulPose(Vector3f.ZP.rotationDegrees(-alpha));
-        matrixStack.mulPose(Vector3f.XP.rotationDegrees(-phi));
-        matrixStack.mulPose(Vector3f.YP.rotationDegrees(-theta));
+        matrixStack.translate(-translation.x(),-translation.y(), -translation.z());
+        planetRotation.conj();
+        matrixStack.mulPose(planetRotation);
+        planetRotation.conj();
     }
 }

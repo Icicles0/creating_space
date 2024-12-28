@@ -1,6 +1,7 @@
 package com.rae.creatingspace.content.planets.hologram;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Quaternion;
 import com.rae.creatingspace.CreatingSpace;
 import com.rae.creatingspace.api.rendering.PlanetsRendering;
 import com.rae.creatingspace.content.planets.PlanetsPosition;
@@ -41,27 +42,25 @@ public class ProjectorBlockRenderer extends SafeBlockEntityRenderer<ProjectorBlo
         ms.translate(0.5,4,0.5);
 
         PlanetsRendering.renderPlanet(CreatingSpace.resource("textures/environment/sun.png"), bufferSource, ms, LightTexture.FULL_BRIGHT,3,
-                sunPos.getRadius(), (float) (sunPos.getTheta()*180/Math.PI), (float) (sunPos.getPhi()*180/Math.PI),0);
-        ms.popPose();
-        ms.pushPose();
-        ms.translate(0.5,4,0.5);
+                sunPos, Quaternion.ONE);
+        //ms.popPose();
+        //ms.pushPose();
+        //ms.translate(0.5,4,0.5);
 
         PlanetsRendering.renderPlanet(CreatingSpace.resource("textures/environment/earth.png"), bufferSource, ms, LightTexture.FULL_BRIGHT, 1F,
-                earthPos.getRadius(), (float) (earthPos.getTheta()*180/Math.PI), (float) (earthPos.getPhi()*180/Math.PI),0);
-        ms.popPose();
-        ms.pushPose();
-        ms.translate(0.5,4,0.5);
+                earthPos, Quaternion.ONE);
+        //ms.popPose();
+        //ms.pushPose();
+        //ms.translate(0.5,4,0.5);
 
         PlanetsRendering.renderAtmosphere(bufferSource, ms,  new Color(0.1f, 0.2f, 0.6f, 0.3f), LightTexture.FULL_BRIGHT,1.1f,
-                earthPos.getRadius(), (float) (earthPos.getTheta() *180/Math.PI), (float) (earthPos.getPhi()*180/Math.PI),0);
-        ms.popPose();
-        ms.pushPose();
-        ms.translate(0.5,4,0.5);
+                earthPos, Quaternion.ONE);
+        //ms.popPose();
+        //ms.pushPose();
+        //ms.translate(0.5,4,0.5);
 
         PlanetsRendering.renderPlanet(CreatingSpace.resource("textures/environment/moon.png"), bufferSource, ms, LightTexture.FULL_BRIGHT,0.8f,
-                moonPos.getRadius(), (float) (moonPos.getTheta()*180/Math.PI), (float) (moonPos.getPhi()*180/Math.PI),0);
-
-
+                moonPos, Quaternion.ONE);
         ms.popPose();
     }
 }
