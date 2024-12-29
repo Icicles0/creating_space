@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:mul",
+  "argument1": {
+    "type": "minecraft:add",
+    "argument1": 0,
+    "argument2": "creatingspace:venus/cave/noodle"
+  },
+  "argument2": {
+    "type": "minecraft:range_choice",
+    "input": "creatingspace:venus/volcanism",
+    "min_inclusive": 0.4,
+    "max_exclusive": 2,
+    "when_in_range": {
+      "type": "minecraft:range_choice",
+      "input": "creatingspace:venus/volcano",
+      "min_inclusive": -7,
+      "max_exclusive": -6,
+      "when_in_range": 0,
+      "when_out_of_range": 1000
+    },
+    "when_out_of_range": 0
+  }
+}

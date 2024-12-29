@@ -24,5 +24,6 @@
     ]
   },
   "features": [
+    ["creatingspace:venus/magma_island"]
   ]
 }

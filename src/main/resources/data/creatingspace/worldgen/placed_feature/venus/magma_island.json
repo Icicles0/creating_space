@@ -1,5 +1,5 @@
 {
-  "feature": "creatingspace:venus/sulfur_spike",
+  "feature": "creatingspace:venus/magma_island",
   "placement": [
     {
       "type": "minecraft:count",
@@ -10,15 +10,15 @@
     },
     {
       "type": "minecraft:heightmap",
-      "heightmap": "OCEAN_FLOOR"
+      "heightmap": "MOTION_BLOCKING"
     },
     {
       "type": "minecraft:biome"
     },
     {
       "type": "minecraft:environment_scan",
-      "direction_of_search": "up",
-      "max_steps": 1,
+      "direction_of_search": "down",
+      "max_steps": 10,
       "target_condition": {
         "type": "minecraft:matching_fluids",
         "offset": [

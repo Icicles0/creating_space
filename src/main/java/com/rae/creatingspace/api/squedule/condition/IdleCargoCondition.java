@@ -1,5 +1,6 @@
 package com.rae.creatingspace.api.squedule.condition;
 
+import com.rae.creatingspace.CreatingSpace;
 import com.rae.creatingspace.content.rocket.RocketContraptionEntity;
 import com.simibubi.create.Create;
 import com.simibubi.create.foundation.utility.Lang;
@@ -19,7 +20,7 @@ public class IdleCargoCondition extends TimedWaitCondition {
 
     @Override
     public ResourceLocation getId() {
-        return Create.asResource("idle");
+        return CreatingSpace.resource("idle");
     }
 
     @Override

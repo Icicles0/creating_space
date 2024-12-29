@@ -8,6 +8,7 @@ import com.rae.creatingspace.init.graphics.MenuTypesInit;
 import com.rae.creatingspace.init.graphics.ParticleTypeInit;
 import com.rae.creatingspace.init.ingameobject.*;
 import com.rae.creatingspace.init.worldgen.CarverInit;
+import com.rae.creatingspace.init.worldgen.FeatureInit;
 import com.rae.creatingspace.legacy.saved.UnlockedDesignManager;
 import com.rae.creatingspace.init.CSContraptionType;
 import com.rae.creatingspace.content.event.IgniteOnPlace;
@@ -64,7 +65,7 @@ public class CreatingSpace {
         PaintingInit.register(modEventBus);
         RecipeInit.register(modEventBus);
         ParticleTypeInit.register(modEventBus);
-        CarverInit.register(modEventBus);
+
         EntityDataSerializersInit.register(modEventBus);
         MiscInit.register(modEventBus);
         CSConfigs.registerConfigs(modLoadingContext);
@@ -73,6 +74,8 @@ public class CreatingSpace {
         PacketInit.registerPackets();
         IgniteOnPlace.register();
 
+        CarverInit.register(modEventBus);
+        FeatureInit.register(modEventBus);
 
         CSContraptionType.prepare();
 

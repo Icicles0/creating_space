@@ -10,7 +10,7 @@
           "argument": {
             "type": "minecraft:shifted_noise",
             "noise": "creatingspace:venus/volcano",
-            "xz_scale": 0.25,
+            "xz_scale": 0.5,
             "y_scale": 0,
             "shift_x": "creatingspace:shift_x",
             "shift_y": 0,
@@ -20,27 +20,17 @@
       },
       "points": [
         {
-          "location": 0.03,
-          "derivative": 0,
-          "value": 0
-        },
-        {
-          "location": 0.1,
-          "derivative": 0,
-          "value": 0
-        },
-        {
-          "location": 0.5,
-          "derivative": 1,
+          "location": 0,
+          "derivative": 0.5,
           "value": 0.5
         },
         {
-          "location": 0.9,
+          "location": 0.6,
           "derivative": -1,
           "value": 5
         },
         {
-          "location": 1.2,
+          "location": 1,
           "derivative": 0,
           "value": -7
         }

@@ -10,7 +10,7 @@
   "default_fluid": {
     "Name": "minecraft:lava",
     "Properties": {
-      "level": 0
+      "level": "0"
     }
   },
   "noise": {
@@ -21,23 +21,27 @@
   },
   "noise_router": {
     "barrier": 0,
-    "fluid_level_floodedness": 0,
+    "fluid_level_floodedness": 0.4,
     "fluid_level_spread": 0,
     "lava": 0,
-    "temperature": 0,
-    "vegetation": 0,
+    "temperature": "creatingspace:venus/volcanism",
+    "vegetation": "creatingspace:venus/toxicity",
     "continents": "creatingspace:venus/volcanism",
     "erosion": 0,
     "depth": 0,
-    "ridges": "creatingspace:venus/toxicity",
+    "ridges": 0,
     "initial_density_without_jaggedness": {
       "type": "minecraft:add",
       "argument1": 0.37,
       "argument2": "creatingspace:venus/slopped_cheese"
     },
     "final_density": {
-      "type": "minecraft:interpolated",
-      "argument": "creatingspace:venus/slopped_cheese"
+        "type": "minecraft:add",
+        "argument1": {
+          "type": "minecraft:interpolated",
+          "argument": "creatingspace:venus/slopped_cheese"
+        },
+        "argument2": "creatingspace:venus/cave/final"
     },
     "vein_toggle": 0,
     "vein_ridged": 0,
