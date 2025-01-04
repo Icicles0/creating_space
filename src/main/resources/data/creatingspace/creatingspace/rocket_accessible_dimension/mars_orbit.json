@@ -14,6 +14,10 @@
   },
   "arrivalHeight": 64,
   "gravity": 0,
-  "orbitedBody": "creatingspace:mars",
-  "distanceToOrbitingBody": 100
+  "orbitParameters": {
+    "orbitedBody": "creatingspace:mars",
+    "r": 100,
+    "orbT": 1000,
+    "rotT": 10
+  }
 }

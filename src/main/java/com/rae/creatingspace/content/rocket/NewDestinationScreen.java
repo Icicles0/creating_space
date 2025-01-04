@@ -48,6 +48,8 @@ import org.lwjgl.opengl.GL30;
 import java.util.*;
 import java.util.function.Consumer;
 
+import static com.rae.creatingspace.api.planets.OrbitParameter.BASE_BODY;
+
 public class NewDestinationScreen extends AbstractSimiContainerScreen<RocketMenu> {
     //TODO transform hard coded schedule stuff to widgets
     //beginning of schedule logic
@@ -119,7 +121,7 @@ public class NewDestinationScreen extends AbstractSimiContainerScreen<RocketMenu
         sun = new Orbit(x + width / 2, y + height / 2, 0, new ResourceLocation("sun"));
         sun.setBodyRadius(20);
         Map<ResourceLocation, Orbit> temp = new HashMap<>();
-        temp.put(RocketAccessibleDimension.BASE_BODY, sun);
+        temp.put(BASE_BODY, sun);
         addRenderableOnly(sun);
         buttonVector.add(0, sun);
         focusedPlanet = sun;

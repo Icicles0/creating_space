@@ -2,7 +2,7 @@
   "type": "minecraft:mul",
   "argument1": {
     "type": "minecraft:add",
-    "argument1": 0,
+    "argument1": "creatingspace:venus/cave/spaghetti_2d",
     "argument2": "creatingspace:venus/cave/noodle"
   },
   "argument2": {
@@ -16,7 +16,7 @@
       "min_inclusive": -7,
       "max_exclusive": -6,
       "when_in_range": 0,
-      "when_out_of_range": 1000
+      "when_out_of_range": 10000
     },
     "when_out_of_range": 0
   }

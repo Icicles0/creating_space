@@ -8,7 +8,11 @@
     }
   },
   "arrivalHeight": 200,
-  "gravity": 1.6,
-  "orbitedBody": "sun",
-  "distanceToOrbitingBody": 400
+  "gravity": 8.87,
+  "orbitParameters": {
+    "orbitedBody": "creatingspace:mars",
+    "r": 400,
+    "orbT": 1000,
+    "rotT": 10
+  }
 }

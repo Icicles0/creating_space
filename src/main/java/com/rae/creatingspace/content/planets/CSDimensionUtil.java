@@ -69,10 +69,12 @@ public class CSDimensionUtil {
         Map<ResourceLocation, RocketAccessibleDimension> collector = new HashMap<>();
         registry.registryKeySet().forEach(resourceKey -> {
                     collector.put(resourceKey.location(), registry.get(resourceKey.location()));
+                    PlanetsPositionsHandler.setOrbitParam(resourceKey.location(), Objects.requireNonNull(registry.get(resourceKey.location())).getOrbitParameter());
                 }
         );
         travelMap = Map.copyOf(collector);
         planets = collector.keySet().stream().toList();
+
     }
 
     //TODO change resource key to resource location
@@ -128,6 +130,9 @@ public class CSDimensionUtil {
     public static boolean isOrbit(ResourceLocation dimension) {
         return gravity(dimension) == 0;
     }
+    public static boolean shouldRenderAsPlanet(ResourceLocation dimension){
+        return travelMap.containsKey(dimension) && travelMap.get(dimension).isRenderAsPlanet();
+    }
     public static @Nullable ResourceKey<Level> planetUnder(ResourceLocation dimension) {
         if (travelMap != null) {
             if (travelMap.containsKey(dimension)) {
@@ -181,6 +186,13 @@ public class CSDimensionUtil {
         return distances;
     }
 
+    public static void updateCostMap() {
+        costAdjacentMap = new HashMap<>();
+        for (ResourceLocation location : getTravelMap().keySet()) {
+            costAdjacentMap.put(location, dijkstra(location));
+        }
+    }
+
     /**
      * if the value returned is < 0, the target dimension is unreachable
      */
@@ -192,10 +204,4 @@ public class CSDimensionUtil {
         return costAdjacentMap.getOrDefault(from, new HashMap<>()).getOrDefault(to, -1);
     }
 
-    public static void updateCostMap() {
-        costAdjacentMap = new HashMap<>();
-        for (ResourceLocation location : getTravelMap().keySet()) {
-            costAdjacentMap.put(location, dijkstra(location));
-        }
-    }
 }

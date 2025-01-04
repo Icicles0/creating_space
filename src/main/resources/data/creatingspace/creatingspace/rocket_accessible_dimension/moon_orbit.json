@@ -15,6 +15,9 @@
   },
   "arrivalHeight": 64,
   "gravity": 0,
-  "orbitedBody": "creatingspace:the_moon",
-  "distanceToOrbitingBody": 10
-}
+  "orbitParameters": {
+    "orbitedBody": "creatingspace:the_moon",
+    "r": 10,
+    "orbT": 1000,
+    "rotT": 10
+  }}

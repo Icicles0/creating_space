@@ -3,8 +3,7 @@ package com.rae.creatingspace.api.rendering;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
-import com.rae.creatingspace.content.planets.PlanetsPosition;
+import com.rae.creatingspace.content.planets.PlanetsPositionsHandler;
 import com.simibubi.create.foundation.render.SuperRenderTypeBuffer;
 import com.simibubi.create.foundation.utility.Color;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -27,12 +26,12 @@ public class PlanetsRendering {
      * @param planetRotation rotation of the planet.
      */
     public static void renderPlanet(ResourceLocation texture, MultiBufferSource buffer, PoseStack matrixStack,
-                                    int packedLight, float size, PlanetsPosition.SkyPos planetPos, Quaternion planetRotation) {
+                                    int packedLight, float size, PlanetsPositionsHandler.SkyPos planetPos, Quaternion planetRotation) {
         VertexConsumer planetBuffer =  buffer.getBuffer(CSRenderTypes.getTranslucentPlanet(texture));//buffer.getBuffer(RenderType.entityTranslucent(texture));
 
         matrixStack.mulPose(planetRotation);
 
-        Vec3 translation = PlanetsPosition.SkyPos.toXYZ(planetPos, Vec3.ZERO);
+        Vec3 translation = PlanetsPositionsHandler.SkyPos.toXYZ(planetPos, Vec3.ZERO);
         matrixStack.translate(translation.x(),translation.y(), translation.z());
         float halfSize = size / 2.0F;
 
@@ -77,17 +76,17 @@ public class PlanetsRendering {
      * to use when no access to the MultiSourceBuffer (DimensionSpecialEffect)
      */
     public static void renderPlanet(ResourceLocation texture, PoseStack matrixStack,
-                                    int packedLight, float size, PlanetsPosition.SkyPos planetPos, Quaternion planetRotation) {
+                                    int packedLight, float size, PlanetsPositionsHandler.SkyPos planetPos, Quaternion planetRotation) {
         renderPlanet(texture, SuperRenderTypeBuffer.getInstance(), matrixStack, packedLight, size,planetPos,planetRotation);
 
     }
 
     public static void renderAtmosphere(MultiBufferSource buffer, PoseStack matrixStack, Color color,
-                                        int packedLight, float size, PlanetsPosition.SkyPos planetPos, Quaternion planetRotation) {
+                                        int packedLight, float size, PlanetsPositionsHandler.SkyPos planetPos, Quaternion planetRotation) {
         VertexConsumer vertexBuilder = buffer.getBuffer(CSRenderTypes.getTranslucentAtmo());//RenderTypes.getGlowingTranslucent(AllSpecialTextures.BLANK.getLocation()));
         matrixStack.mulPose(planetRotation);
 
-        Vec3 translation = PlanetsPosition.SkyPos.toXYZ(planetPos, Vec3.ZERO);
+        Vec3 translation = PlanetsPositionsHandler.SkyPos.toXYZ(planetPos, Vec3.ZERO);
         matrixStack.translate(translation.x(),translation.y(), translation.z());
         renderCube(vertexBuilder, matrixStack, Vec3.ZERO, packedLight, size, color);
         matrixStack.translate(-translation.x(),-translation.y(), -translation.z());

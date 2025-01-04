@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Quaternion;
 import com.rae.creatingspace.CreatingSpace;
 import com.rae.creatingspace.api.rendering.PlanetsRendering;
-import com.rae.creatingspace.content.planets.PlanetsPosition;
+import com.rae.creatingspace.content.planets.PlanetsPositionsHandler;
 import com.simibubi.create.foundation.blockEntity.renderer.SafeBlockEntityRenderer;
 import com.simibubi.create.foundation.utility.Color;
 import net.minecraft.client.renderer.LightTexture;
@@ -15,7 +15,10 @@ import org.lwjgl.system.NonnullDefault;
 
 import java.util.Objects;
 
-import static com.rae.creatingspace.content.planets.PlanetsPosition.getSkyPos;
+import static com.rae.creatingspace.api.planets.OrbitParameter.BASE_BODY;
+import static com.rae.creatingspace.content.planets.PlanetsPositionsHandler.getSkyPos;
+import static com.rae.creatingspace.content.planets.PlanetsPositionsHandler.renderForAll;
+
 @NonnullDefault
 public class ProjectorBlockRenderer extends SafeBlockEntityRenderer<ProjectorBlockEntity> {
     public ProjectorBlockRenderer(BlockEntityRendererProvider.Context context) {
@@ -34,33 +37,10 @@ public class ProjectorBlockRenderer extends SafeBlockEntityRenderer<ProjectorBlo
 
     @Override
     protected void renderSafe(ProjectorBlockEntity be, float partialTicks, PoseStack ms, MultiBufferSource bufferSource, int light, int overlay) {
-        PlanetsPosition.SkyPos sunPos = getSkyPos(CreatingSpace.resource("sun"), CreatingSpace.resource("sun"), Objects.requireNonNull(be.getLevel()).getGameTime()+ partialTicks);
-
-        PlanetsPosition.SkyPos earthPos = getSkyPos(CreatingSpace.resource("sun"), CreatingSpace.resource("earth"), Objects.requireNonNull(be.getLevel()).getGameTime()+ partialTicks);
-        PlanetsPosition.SkyPos moonPos = getSkyPos(CreatingSpace.resource("sun"), CreatingSpace.resource("moon"), Objects.requireNonNull(be.getLevel()).getGameTime()+ partialTicks);
         ms.pushPose();
         ms.translate(0.5,4,0.5);
-
-        PlanetsRendering.renderPlanet(CreatingSpace.resource("textures/environment/sun.png"), bufferSource, ms, LightTexture.FULL_BRIGHT,3,
-                sunPos, Quaternion.ONE);
-        //ms.popPose();
-        //ms.pushPose();
-        //ms.translate(0.5,4,0.5);
-
-        PlanetsRendering.renderPlanet(CreatingSpace.resource("textures/environment/earth.png"), bufferSource, ms, LightTexture.FULL_BRIGHT, 1F,
-                earthPos, Quaternion.ONE);
-        //ms.popPose();
-        //ms.pushPose();
-        //ms.translate(0.5,4,0.5);
-
-        PlanetsRendering.renderAtmosphere(bufferSource, ms,  new Color(0.1f, 0.2f, 0.6f, 0.3f), LightTexture.FULL_BRIGHT,1.1f,
-                earthPos, Quaternion.ONE);
-        //ms.popPose();
-        //ms.pushPose();
-        //ms.translate(0.5,4,0.5);
-
-        PlanetsRendering.renderPlanet(CreatingSpace.resource("textures/environment/moon.png"), bufferSource, ms, LightTexture.FULL_BRIGHT,0.8f,
-                moonPos, Quaternion.ONE);
+        renderForAll( Objects.requireNonNull(be.getLevel()).getGameTime()+ partialTicks,ms,bufferSource, BASE_BODY);
         ms.popPose();
+
     }
 }
