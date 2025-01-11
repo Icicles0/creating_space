@@ -22,4 +22,5 @@ public abstract class BoatMixin extends Entity {
         }
         return d1;
     }
+
 }

@@ -11,8 +11,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = FallingBlockEntity.class)
-public abstract class FallingBlockEntityEntityMixin extends Entity {
-    public FallingBlockEntityEntityMixin(EntityType<?> p_19870_, Level p_19871_) {
+public abstract class FallingBlockEntityMixin extends Entity {
+    public FallingBlockEntityMixin(EntityType<?> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
     }
 

@@ -6,9 +6,10 @@
   },
   "arrivalHeight": 200,
   "gravity": 3.71,
+  "renderAsPlanet": true,
   "orbitParameters": {
-    "r": 100,
-    "orbT": 1000,
-    "rotT": 10
+    "r": 228,
+    "orbT": 687,
+    "rotT": 1
   }
 }

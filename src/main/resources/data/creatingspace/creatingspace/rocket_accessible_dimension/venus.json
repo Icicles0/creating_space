@@ -1,18 +1,16 @@
 {
   "adjacentDimensions": {
-    "creatingspace:moon_orbit": {
-      "deltaV": 1800
-    },
-    "creatingspace:earth_orbit": {
-      "deltaV": 2000
+    "creatingspace:venus_orbit": {
+      "deltaV": 1000
     }
   },
   "arrivalHeight": 200,
   "gravity": 8.87,
+  "renderAsPlanet": true,
   "orbitParameters": {
-    "orbitedBody": "creatingspace:mars",
-    "r": 400,
-    "orbT": 1000,
-    "rotT": 10
+    "size": 1.0,
+    "r": 67,
+    "orbT": 224,
+    "rotT": -243
   }
 }
