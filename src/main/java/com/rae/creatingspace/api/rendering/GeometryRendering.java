@@ -88,7 +88,7 @@ public class GeometryRendering {
         }
     }
 
-    public static void renderPolyTex(List<Vec3> pos, List<Vec2> uvVector, VertexConsumer vertexBuilder, PoseStack.Pose entry, int packedLight) {
+    public static void renderPolyTex(List<Vec3> pos, List<Vec2> uvVector, VertexConsumer vertexBuilder, PoseStack.Pose entry, int packedLight,Color color) {
         Vec3 centerPos = new Vec3(0, 0, 0);
         for (Vec3 coord : pos) {
             centerPos = centerPos.add(coord);
@@ -99,7 +99,7 @@ public class GeometryRendering {
             Vec2 uv = uvVector.get(i);
             Vec3 normal = coord.subtract(centerPos);
             vertexBuilder.vertex(entry.pose(), (float) coord.x, (float) coord.y, (float) coord.z)
-                    .color(255, 255, 255, 255)
+                    .color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha())
                     .uv(uv.x, uv.y)
                     .overlayCoords(OverlayTexture.NO_OVERLAY)
                     .uv2(packedLight)

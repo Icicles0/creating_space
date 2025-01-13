@@ -98,14 +98,14 @@ public class PlanetsPositionsHandler {
      * This includes applying rotations and drawing the planets at the correct positions.
      * The time is in Overworld days.
      *
+     * @param skyColor
      * @param time         The current time in Overworld days.
      * @param ms           The matrix stack used for transformations.
      * @param bufferSource The buffer source to store the rendered planets.
      * @param center       The location of the center planet.
      * @param renderCenter Whether to render the center planet or not.
-     * @param skyColor
      */
-    public static void renderForAll(float time, PoseStack ms, MultiBufferSource bufferSource, ResourceLocation center, boolean renderCenter) {
+    public static void renderForAll(float time, PoseStack ms, MultiBufferSource bufferSource, ResourceLocation center, boolean renderCenter, Color skyColor) {
         if (positions.containsKey(center)) {
             applyRotation(ms, positions.get(center), -time);
         }
@@ -121,7 +121,7 @@ public class PlanetsPositionsHandler {
                 .map(Map.Entry::getKey)
                 .toList();
 
-        sortedByDistance.forEach(location -> renderPlanet(ms, bufferSource, time, location, collectedPos.get(location)));
+        sortedByDistance.forEach(location -> renderPlanet(ms, bufferSource, time, location, collectedPos.get(location),skyColor));
 
         if (positions.containsKey(center)) {
             applyRotation(ms, positions.get(center), time);
@@ -157,21 +157,22 @@ public class PlanetsPositionsHandler {
      * Renders a planet at its calculated position with the correct rotation.
      * The time is in Overworld days.
      *
-     * @param ms The matrix stack to apply transformations.
+     * @param ms           The matrix stack to apply transformations.
      * @param bufferSource The buffer source to store the rendered planet.
-     * @param time The current time in Overworld days.
-     * @param location The location (ID) of the planet.
-     * @param pos The calculated position of the planet.
+     * @param time         The current time in Overworld days.
+     * @param location     The location (ID) of the planet.
+     * @param pos          The calculated position of the planet.
+     * @param skyColor
      */
-    private static void renderPlanet(PoseStack ms, MultiBufferSource bufferSource, float time, ResourceLocation location, SkyPos pos
-    ) {
+    private static void renderPlanet(PoseStack ms, MultiBufferSource bufferSource, float time, ResourceLocation location, SkyPos pos,
+                                     Color skyColor) {
         OrbitParameter orbitParameter = positions.get(location);
         float angle = (float) (2 * time / orbitParameter.rotT() * Math.PI);
         Quaternion rotation = new Quaternion(new Vector3f(orbitParameter.rotationAxis()), angle, false);
 
         PlanetsRendering.renderPlanet(
                 new ResourceLocation(location.getNamespace(), "textures/environment/planets/" + location.getPath() + ".png"),
-                bufferSource, ms, LightTexture.FULL_BRIGHT, orbitParameter.size(), pos, rotation
+                bufferSource, ms, LightTexture.FULL_BRIGHT, orbitParameter.size(), pos, rotation,skyColor
         );
     }
 

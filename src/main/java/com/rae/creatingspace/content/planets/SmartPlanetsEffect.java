@@ -7,9 +7,6 @@ import com.mojang.math.Matrix4f;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
 import com.rae.creatingspace.api.planets.OrbitParameter;
-import com.rae.creatingspace.api.rendering.GeometryRendering;
-import com.simibubi.create.AllSpecialTextures;
-import com.simibubi.create.foundation.render.RenderTypes;
 import com.simibubi.create.foundation.utility.Color;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -19,13 +16,11 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.NonnullDefault;
-
-import java.nio.Buffer;
-import java.util.List;
 
 @NonnullDefault
 public class SmartPlanetsEffect extends DimensionSpecialEffects {
@@ -70,13 +65,11 @@ public class SmartPlanetsEffect extends DimensionSpecialEffects {
         // Retrieve the dynamic FOV
 
         RenderSystem.setShaderFogColor(0,0,0,0);
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthFunc(GL11.GL_ALWAYS); // Always pass depth test
-        RenderSystem.depthMask(false);
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
-        //RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
+        RenderSystem.depthMask(false);
+
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
 
         ResourceLocation location = level.dimension().location();
         OrbitParameter orbitParameter = PlanetsPositionsHandler.getOrbitParam(location);
@@ -86,33 +79,22 @@ public class SmartPlanetsEffect extends DimensionSpecialEffects {
         RenderSystem.backupProjectionMatrix();
         RenderSystem.setProjectionMatrix(customProjection);
 
-        //renderSpaceSky(poseStack,new Quaternion(new Vector3f(orbitParameter.rotationAxis()), (float) (-2*time/orbitParameter.rotT()* Math.PI),false));
-
-
-
-        // Set up Tesselator and MultiBufferSource
-        //Tesselator tesselator = Tesselator.getInstance();
         MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(new BufferBuilder(256));
         poseStack.pushPose();
         poseStack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
         poseStack.mulPose(Vector3f.XP.rotationDegrees(90.0F));
+        float timeOfDay = level.getTimeOfDay(time*dayLength);
+        Color color = new Color(level.getBiome(camera.getBlockPosition()).get().getSkyColor());
+        //System.out.println("red : "+color.getRed()+" green : "+color.getGreen()+" blue : "+color.getBlue()+" alpha : "+color.getAlpha());
+        renderSpaceSky(poseStack,new Quaternion(new Vector3f(orbitParameter.rotationAxis()), (float) (-2*time/orbitParameter.rotT()* Math.PI),false)
+        );
 
-        renderSpaceSky(poseStack,new Quaternion(new Vector3f(orbitParameter.rotationAxis()), (float) (-2*time/orbitParameter.rotT()* Math.PI),false),
-                level.getBiome(camera.getBlockPosition()).get().getSkyColor());
-
-        PlanetsPositionsHandler.renderForAll(time,poseStack,bufferSource,location, false);
-
+        PlanetsPositionsHandler.renderForAll(time,poseStack,bufferSource,location, false,Color.WHITE);
         poseStack.popPose();
+        renderColoredSky(poseStack,color);
 
-        //overlay
-        /*poseStack.pushPose();
-        //poseStack.mulPose(Vector3f.XN.rotationDegrees(camera.getXRot()));
-        //poseStack.mulPose(Vector3f.YP.rotationDegrees(camera.getYRot()));
-        GeometryRendering.renderPoly(List.of(new Vec3(1,1,0),new Vec3(1,-1,0),new Vec3(-1,-1,0),new Vec3(-1,1,0))
-                ,MultiBufferSource.immediate(new BufferBuilder(255)).getBuffer(RenderTypes.getGlowingTranslucent(AllSpecialTextures.BLANK.getLocation())), poseStack.last(), LightTexture.FULL_BRIGHT,
-                new Color( level.getBiome(camera.getBlockPosition()).get().getSkyColor())
-                );
-        poseStack.popPose();*/
+
+
 
         bufferSource.endBatch();
         RenderSystem.restoreProjectionMatrix();
@@ -123,7 +105,8 @@ public class SmartPlanetsEffect extends DimensionSpecialEffects {
         RenderSystem.disableBlend();
         return true;
     }
-    private static void renderSpaceSky(PoseStack poseStack, Quaternion planetRotation, int skyColor) {
+    //doesn't work right
+    private static void renderSpaceSky(PoseStack poseStack, Quaternion planetRotation) {
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderSystem.setShaderTexture(0, SPACE_SKY_LOCATION);
         Tesselator tesselator = Tesselator.getInstance();
@@ -167,10 +150,10 @@ public class SmartPlanetsEffect extends DimensionSpecialEffects {
             float distance = 200.0F;
             Matrix4f matrix4f = poseStack.last().pose();
             bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-            bufferbuilder.vertex(matrix4f, -size, -distance, -size).uv(col_end, l_end).color(skyColor).endVertex();
-            bufferbuilder.vertex(matrix4f, -size, -distance, size).uv(col_begin, l_end).color(skyColor).endVertex();
-            bufferbuilder.vertex(matrix4f, size, -distance, size).uv(col_begin, l_begin).color(skyColor).endVertex();
-            bufferbuilder.vertex(matrix4f, size, -distance, -size).uv(col_end, l_begin).color(skyColor).endVertex();
+            bufferbuilder.vertex(matrix4f, -size, -distance, -size).uv(col_end, l_end).color(Color.WHITE.getRed(), Color.WHITE.getGreen(), Color.WHITE.getBlue(), Color.WHITE.getAlpha()).endVertex();
+            bufferbuilder.vertex(matrix4f, -size, -distance, size).uv(col_begin, l_end).color(Color.WHITE.getRed(), Color.WHITE.getGreen(), Color.WHITE.getBlue(), Color.WHITE.getAlpha()).endVertex();
+            bufferbuilder.vertex(matrix4f, size, -distance, size).uv(col_begin, l_begin).color(Color.WHITE.getRed(), Color.WHITE.getGreen(), Color.WHITE.getBlue(), Color.WHITE.getAlpha()).endVertex();
+            bufferbuilder.vertex(matrix4f, size, -distance, -size).uv(col_end, l_begin).color(Color.WHITE.getRed(), Color.WHITE.getGreen(), Color.WHITE.getBlue(), Color.WHITE.getAlpha()).endVertex();
             BufferUploader.drawWithShader(bufferbuilder.end());
             //tesselator.end();
 
@@ -198,4 +181,68 @@ public class SmartPlanetsEffect extends DimensionSpecialEffects {
         poseStack.mulPose(planetRotation);
         planetRotation.conj();
     }
+
+    private static void renderColoredSky(PoseStack poseStack, Color skyColor) {
+        // Bind no texture
+        RenderSystem.disableTexture();
+        RenderSystem.enableBlend();//needed because the call to other shaders disables it
+        RenderSystem.defaultBlendFunc();
+
+        // Get the Tesselator and BufferBuilder
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder bufferBuilder = tesselator.getBuilder();
+
+        int slices = 16; // Number of longitude segments
+        float radius = 100.0F;
+
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShaderColor(1.0f,1.0f,1.0f,1.0f);
+
+        poseStack.pushPose();
+        Matrix4f matrix4f = poseStack.last().pose();
+
+
+        poseStack.mulPose(Vector3f.XP.rotationDegrees(-180));
+        // Render the top half of the sphere (northern hemisphere)
+        bufferBuilder.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
+        bufferBuilder.vertex(matrix4f, 0.0F, -radius, 0.0F) // Top pole
+                .color(skyColor.getRed(), skyColor.getGreen(), skyColor.getBlue(), skyColor.getAlpha())
+                .endVertex();
+
+        for (int i = 0; i <= slices; ++i) {
+            float theta = (float) (i * 2 * Math.PI / slices);
+            float x = Mth.sin(theta) * radius;
+            float z = Mth.cos(theta) * radius;
+            bufferBuilder.vertex(matrix4f, x, 0.0F, z) // Edge of equator
+                    .color(skyColor.getRed(), skyColor.getGreen(), skyColor.getBlue(), skyColor.getAlpha())
+                    .endVertex();
+        }
+
+        BufferUploader.drawWithShader(bufferBuilder.end());
+
+
+
+        // Render the bottom half of the sphere (southern hemisphere)
+        poseStack.mulPose(Vector3f.XP.rotationDegrees(180));
+        bufferBuilder.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
+        bufferBuilder.vertex(matrix4f, 0.0F, -radius, 0.0F) // Bottom pole
+                .color(skyColor.getRed(), skyColor.getGreen(), skyColor.getBlue(), skyColor.getAlpha())
+                .endVertex();
+
+        for (int i = 0; i <= slices; ++i) {
+            float theta = (float) (i * 2 * Math.PI / slices);
+            float x = Mth.sin(theta) * radius;
+            float z = Mth.cos(theta) * radius;
+            bufferBuilder.vertex(matrix4f, x, 0.0F, z) // Edge of equator
+                    .color(skyColor.getRed(), skyColor.getGreen(), skyColor.getBlue(), skyColor.getAlpha())
+                    .endVertex();
+        }
+
+        BufferUploader.drawWithShader(bufferBuilder.end());
+
+        poseStack.popPose();
+
+
+    }
+
 }

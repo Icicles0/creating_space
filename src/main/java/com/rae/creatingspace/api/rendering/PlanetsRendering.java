@@ -4,10 +4,13 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
 import com.rae.creatingspace.content.planets.PlanetsPositionsHandler;
+import com.simibubi.create.AllSpecialTextures;
 import com.simibubi.create.foundation.render.RenderTypes;
 import com.simibubi.create.foundation.render.SuperRenderTypeBuffer;
 import com.simibubi.create.foundation.utility.Color;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
@@ -28,7 +31,7 @@ public class PlanetsRendering {
      * @param planetRotation rotation of the planet.
      */
     public static void renderPlanet(ResourceLocation texture, MultiBufferSource buffer, PoseStack matrixStack,
-                                    int packedLight, float size, PlanetsPositionsHandler.SkyPos planetPos, Quaternion planetRotation) {
+                                    int packedLight, float size, PlanetsPositionsHandler.SkyPos planetPos, Quaternion planetRotation, Color skyColor) {
         VertexConsumer planetBuffer =  buffer.getBuffer(RenderTypes.getGlowingSolid(texture));//buffer.getBuffer(RenderType.entityTranslucent(texture));
 
 
@@ -59,12 +62,12 @@ public class PlanetsRendering {
                 new Vec2(1, 1), new Vec2(1, 0));
         // Render each face using renderPoly
         PoseStack.Pose entry = matrixStack.last();
-        renderPolyTex(face1, uvs, planetBuffer, entry, packedLight);
-        renderPolyTex(face2, uvs, planetBuffer, entry, packedLight);
-        renderPolyTex(face3, uvs, planetBuffer, entry, packedLight);
-        renderPolyTex(face4, uvs, planetBuffer, entry, packedLight);
-        renderPolyTex(face5, uvs, planetBuffer, entry, packedLight);
-        renderPolyTex(face6, uvs, planetBuffer, entry, packedLight);
+        renderPolyTex(face1, uvs, planetBuffer, entry, packedLight,skyColor);
+        renderPolyTex(face2, uvs, planetBuffer, entry, packedLight,skyColor);
+        renderPolyTex(face3, uvs, planetBuffer, entry, packedLight,skyColor);
+        renderPolyTex(face4, uvs, planetBuffer, entry, packedLight,skyColor);
+        renderPolyTex(face5, uvs, planetBuffer, entry, packedLight,skyColor);
+        renderPolyTex(face6, uvs, planetBuffer, entry, packedLight,skyColor);
         //undo transformation
         planetRotation.conj();
         matrixStack.mulPose(planetRotation);
@@ -77,8 +80,8 @@ public class PlanetsRendering {
      * to use when no access to the MultiSourceBuffer (DimensionSpecialEffect)
      */
     public static void renderPlanet(ResourceLocation texture, PoseStack matrixStack,
-                                    int packedLight, float size, PlanetsPositionsHandler.SkyPos planetPos, Quaternion planetRotation) {
-        renderPlanet(texture, MultiBufferSource.immediate(new BufferBuilder(256)), matrixStack, packedLight, size,planetPos,planetRotation);
+                                    int packedLight, float size, PlanetsPositionsHandler.SkyPos planetPos, Quaternion planetRotation,Color skyColor) {
+        renderPlanet(texture, MultiBufferSource.immediate(new BufferBuilder(256)), matrixStack, packedLight, size,planetPos,planetRotation,skyColor);
 
     }
 
@@ -95,4 +98,6 @@ public class PlanetsRendering {
         matrixStack.mulPose(planetRotation);
         planetRotation.conj();
     }
+
+
 }
