@@ -31,7 +31,10 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Stream;
+
+import static java.lang.Math.abs;
 
 @Mod.EventBusSubscriber(modid = CreatingSpace.MODID)
 public class CSEventHandler {
@@ -100,11 +103,47 @@ public class CSEventHandler {
     }
     @SubscribeEvent
     public static void playerSleeping(SleepFinishedTimeEvent sleepFinishedEvent) {
-        sleepFinishedEvent.getLevel().getServer().getLevel(Level.OVERWORLD).setDayTime(sleepFinishedEvent.getNewTime());
-        /*for (ServerLevel serverlevel : sleepFinishedEvent.getLevel().getServer().getAllLevels()) {
-            serverlevel.setDayTime(sleepFinishedEvent.getNewTime());
-        }*/
+        /*System.out.println(0.5-sleepFinishedEvent.getLevel().getTimeOfDay(sleepFinishedEvent.getNewTime()));
+        float newTime = dichotomy((t)-> (float) (0.5-sleepFinishedEvent.getLevel().getTimeOfDay(t)),
+                sleepFinishedEvent.getNewTime(),sleepFinishedEvent.getNewTime()*1000,1);
+*/
+        Objects.requireNonNull(Objects.requireNonNull(sleepFinishedEvent.getLevel().getServer()).getLevel(Level.OVERWORLD))
+                .setDayTime((long) sleepFinishedEvent.getNewTime());
     }
+    @SubscribeEvent
+    public static void blockChange(BlockEvent.NeighborNotifyEvent event){
+        event.getNotifiedSides().forEach(
+                direction -> {
+                    List<RoomAtmosphere> list = event.getLevel().getEntitiesOfClass(RoomAtmosphere.class,new AABB(event.getPos().relative(direction)));
+                    System.out.println(list);
+                }
+        );
+    }
+
+    private static float dichotomy(Function<Float, Float> function, float a, float b, float epsilon) {
+        try {
+            if (function.apply(a) * function.apply(b) > 0) {  //On vérifie l 'encadrement de la fonction
+                throw new RuntimeException("Mauvais choix de a ou b.");
+            } else {
+                float m = (float) ((a + b) / 2.);
+                while (abs(a - b) > epsilon) {
+                    if (function.apply(m) == 0.0) {
+                        return m;
+                    } else if (function.apply(a) * function.apply(m) > 0) {
+                        a = m;
+                    } else {
+                        b = m;
+                    }
+                    m = (a + b) / 2;
+                }
+                return m;
+            }
+        } catch (RuntimeException e) {
+            System.out.println(e);
+            return 0;
+        }
+    }
+
 
     public static boolean checkPlayerO2Equipment(ServerPlayer player){
 

@@ -42,9 +42,8 @@ public abstract class LevelMixin implements LevelTimeAccess{
     private float cS_1_19_2$calculateCustomTime(ResourceLocation dimensionId, float time) {
         PlanetsPositionsHandler.SkyPos pos = PlanetsPositionsHandler.getSkyPos(dimensionId,BASE_BODY,time);
         float rotOffset = (float) (time/PlanetsPositionsHandler.getOrbitParam(dimensionId).rotT()*Math.PI*2%(2*Math.PI));
-        float theta = (float) ((pos.getTheta()  + rotOffset));
+        float theta = (float) ((pos.getTheta()  - rotOffset));
         //theta can be negative PI so add 2 PI to ensure result bwn 0 1
-        float result = (float) ((theta + 2*Math.PI)%(2*Math.PI)/(2*Math.PI));
-        return  result;
+        return (float) ((theta + 2*Math.PI)%(2*Math.PI)/(2*Math.PI));
         }
 }

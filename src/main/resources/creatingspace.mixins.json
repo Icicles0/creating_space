@@ -18,6 +18,7 @@
     "fluids.pump.MixinPumpBlock",
     "kinetics.BacktankBlockEntityMixin",
     "level.LevelMixin",
+    "level.ServerLevelMixin",
     "recipe.ItemApplicationMixin",
     "recipe.ProcessingRecipeMixin",
     "recipe.ProcessingRecipeRecipeSerializerMixin",
