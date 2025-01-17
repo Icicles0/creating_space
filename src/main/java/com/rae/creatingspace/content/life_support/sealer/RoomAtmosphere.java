@@ -3,6 +3,7 @@ package com.rae.creatingspace.content.life_support.sealer;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.UnboundedMapCodec;
+import com.rae.creatingspace.CreatingSpace;
 import com.rae.creatingspace.configs.CSConfigs;
 import com.rae.creatingspace.init.EntityDataSerializersInit;
 import com.simibubi.create.AllTags;
@@ -58,7 +59,8 @@ public class RoomAtmosphere extends Entity {
     // plants will filter (absorbing C02 and releasing 02, living will consume 02 and release C02)
     ArrayList<BlockPos> roomSealers = new ArrayList<>();
     HashMap<ResourceLocation, AtmosphereFilterData> passiveFilters = new HashMap<>();
-
+    Queue<BlockPos> toVist = new ArrayDeque<>();
+    ArrayList<AABB> tempRoom = new ArrayList<>();
     //TODO make a regenerateRoom and a searchFrontier methode (regenerateRoom will only initiate the call, searchFrontier will be private)
     public void regenerateRoom(BlockPos firstPos) {
         passiveFilters = new HashMap<>();
@@ -85,11 +87,14 @@ public class RoomAtmosphere extends Entity {
      */
 
     private RoomShape searchTopology(BlockPos start) {
-        Queue<BlockPos> toVist = new ArrayDeque<>();
+        float time = System.nanoTime();
         toVist.add(start);
-        ArrayList<AABB> tempRoom = new ArrayList<>();
-        int currentSize = 0;
-        while (!toVist.isEmpty() && currentSize < CSConfigs.SERVER.maxSizePerSealer.get() * Math.max(roomSealers.size(), 1)) {
+        tempRoom = getShape().getListOfBox();
+
+        tempRoom.removeIf(a ->a.contains(Vec3.atCenterOf(start)));
+
+        int addedSize = 0;
+        while (!toVist.isEmpty() && addedSize < CSConfigs.SERVER.maxBlockPerTick.get()) {
             BlockPos tempPos = toVist.poll();
             assert tempPos != null;
             if (!contains(tempRoom, tempPos)) {
@@ -97,7 +102,7 @@ public class RoomAtmosphere extends Entity {
 
                 boolean canContinue = true;
                 //make it possible to compute in batch
-                while (canContinue && tempAabb.getSize() < 10) {
+                while (canContinue && tempAabb.getSize() < 30) {
                     canContinue = false;
                     for (Direction dir : Direction.values()) {
                         //make a condition here to avoid looping when no walls
@@ -141,16 +146,25 @@ public class RoomAtmosphere extends Entity {
                     }
                 }
                 tempRoom.add(tempAabb);
-                currentSize += (int) (tempAabb.getXsize() * tempAabb.getYsize() * tempAabb.getZsize());
+                addedSize += (int) (tempAabb.getXsize() * tempAabb.getYsize() * tempAabb.getZsize());
             }
         }
         RoomShape shape = new RoomShape(tempRoom);
         if (size(tempRoom) >=  CSConfigs.SERVER.maxSizePerSealer.get() * Math.max(roomSealers.size(), 1)) {
             shape.setOpen();
+            toVist = new ArrayDeque<>();
+        }
+        else if (toVist.isEmpty()){
+            shape.setClosed();
+            toVist = new ArrayDeque<>();
         }
         else {
-            shape.setClosed();
+            shape.setOpen();
         }
+        tempRoom = new ArrayList<>();
+        float took = System.nanoTime()- time;
+
+        CreatingSpace.LOGGER.info("Search pass took : "+took/1000+" micro seconds | added "+addedSize+ " blocks"+ " | there is "+ toVist.size()+" blocks to visit"+ " | room complexity : "+ shape.getListOfBox().size()+"conclusion : "+(shape.isClosed()?"closed":"open"));
         return shape;
     }
 
@@ -292,6 +306,9 @@ public class RoomAtmosphere extends Entity {
         super.tick();
 
         if (!level.isClientSide()) {
+            if (!toVist.isEmpty()){
+                entityData.set(SHAPE_DATA_ACCESSOR,searchTopology(toVist.poll()));
+            }
             if (!getShape().closed){
                 entityData.set(O2_AMOUNT,0);
             }
