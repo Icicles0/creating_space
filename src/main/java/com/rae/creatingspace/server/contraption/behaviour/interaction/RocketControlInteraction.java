@@ -1,6 +1,5 @@
 package com.rae.creatingspace.server.contraption.behaviour.interaction;
 
-import com.rae.creatingspace.CreatingSpace;
 import com.rae.creatingspace.client.gui.menu.RocketMenu;
 import com.rae.creatingspace.server.entities.RocketContraptionEntity;
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;

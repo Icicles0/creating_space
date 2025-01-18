@@ -5,7 +5,6 @@ import com.rae.creatingspace.init.graphics.SpriteShiftInit;
 import com.rae.creatingspace.server.armor.OxygenBacktankBlock;
 import com.rae.creatingspace.server.blocks.*;
 import com.rae.creatingspace.server.blocks.atmosphere.OxygenBlock;
-import com.rae.creatingspace.server.blocks.atmosphere.RoomPressuriserBlock;
 import com.rae.creatingspace.server.blocks.atmosphere.SealerBlock;
 import com.rae.creatingspace.server.blocks.multiblock.BigRocketStructuralBlock;
 import com.rae.creatingspace.server.blocks.multiblock.SmallRocketStructuralBlock;
@@ -17,6 +16,7 @@ import com.rae.creatingspace.server.contraption.behaviour.interaction.FlightReco
 import com.rae.creatingspace.server.contraption.behaviour.interaction.RocketControlInteraction;
 import com.rae.creatingspace.server.contraption.behaviour.movement.EngineMovementBehaviour;
 import com.rae.creatingspace.server.items.CryogenicTankItem;
+import com.rae.creatingspace.server.items.RocketControlsItem;
 import com.rae.creatingspace.server.items.engine.BigEngineItem;
 import com.rae.creatingspace.server.items.engine.EngineItem;
 import com.rae.creatingspace.server.items.engine.SmallEngineItem;
@@ -142,7 +142,7 @@ public class BlockInit {
             .properties(p -> p.strength(1.0f).dynamicShape().noOcclusion().requiresCorrectToolForDrops())
             .transform(axeOrPickaxe())
             .onRegister(interactionBehaviour(new RocketControlInteraction()))
-            .item()
+            .item(RocketControlsItem::new)
             .properties(p -> p.tab(CreativeModeTabsInit.MACHINE_TAB))
             .transform(customItemModel())
             .register();
@@ -415,16 +415,6 @@ public class BlockInit {
             .item()
             .properties(p-> p.tab(CreativeModeTabsInit.MINERALS_TAB))
             .transform(customItemModel())
-            .register();
-
-
-    public static final BlockEntry<Block> TITANIUM_BLOCK = REGISTRATE.block(
-                    "titanium_block", Block::new)
-            .initialProperties(() -> Blocks.IRON_BLOCK)
-            .properties(BlockBehaviour.Properties::requiresCorrectToolForDrops)
-            .item()
-            .properties(p -> p.tab(CreativeModeTabsInit.MINERALS_TAB))
-            .build()
             .register();
 
     //machinery
