@@ -99,7 +99,6 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
             TagKey.codec(Registry.FLUID_REGISTRY),
             Codec.FLOAT
     ).xmap(HashMap::new, i -> i);
-    public BlockPos rocketEntryCoordinate = new BlockPos(0,0,0);
     public float totalThrust = 0;
     public float initialMass;
     public ResourceLocation originDimension = Level.OVERWORLD.location();
@@ -433,7 +432,7 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
     }
     @Override
     public void tick() {
-        ROCKET_SOUND_LENGTH = 65;
+        ROCKET_SOUND_LENGTH = 35;
 
         //movement is bugged when in ground -> avoid collision by slowing down upon landing ? or breaking blocks
         boolean wasRunning = isInPropulsionPhase();
@@ -525,7 +524,6 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
             );
 
             if (destServerLevel!=null /*&& level.dimension() == this.originDimension*/) {
-
                 this.changeDimension(destServerLevel,new CustomTeleporter(destServerLevel));
             }
             else {
