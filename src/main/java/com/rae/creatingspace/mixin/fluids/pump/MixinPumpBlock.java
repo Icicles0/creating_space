@@ -16,11 +16,14 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.PipeBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import org.jetbrains.annotations.NotNull;
+import org.lwjgl.system.NonnullDefault;
 import org.spongepowered.asm.mixin.Implements;
 import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(PumpBlock.class)
+@NonnullDefault
 @Implements(@Interface(iface = EncasableBlock.class, prefix = "encasable$"))
 public abstract class MixinPumpBlock extends Block implements EncasableBlock {
 
@@ -35,7 +38,7 @@ public abstract class MixinPumpBlock extends Block implements EncasableBlock {
 
     @Override
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand,
-                                 BlockHitResult ray) {
+                                          BlockHitResult ray) {
         ItemStack heldItem = player.getItemInHand(hand);
         InteractionResult result = tryEncase(state, world, pos, heldItem, player, hand, ray);
         if (result.consumesAction())

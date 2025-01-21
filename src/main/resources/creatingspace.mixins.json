@@ -15,6 +15,7 @@
     "entity.gravity.MinecartMixin",
     "entity.gravity.PrimedTntMixin",
     "fluids.MixinFluidTransportBehaviour",
+    "fluids.pump.FluidPropagatorMixin",
     "fluids.pump.MixinPumpBlock",
     "kinetics.BacktankBlockEntityMixin",
     "level.LevelMixin",
