@@ -27,7 +27,7 @@ public abstract class ServerLevelMixin extends Level {
     @Inject(method = "onBlockStateChange", at = @At("HEAD"))
     private void onSetBlockState(BlockPos pos, BlockState oldState, BlockState newState, CallbackInfo ci) {
         if (!oldState.equals(newState)) {
-            System.out.println("Blockstate changed at " + pos + ": " + oldState + " -> " + newState);
+            //System.out.println("Blockstate changed at " + pos + ": " + oldState + " -> " + newState);
         }
     }
 }
