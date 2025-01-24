@@ -18,11 +18,12 @@ import net.minecraft.world.level.levelgen.carver.WorldCarver;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
+import org.lwjgl.system.NonnullDefault;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-
+@NonnullDefault
 public class CraterCarver extends WorldCarver<CraterCarverConfig> {
 
     public HashMap<Couple<Integer>, Integer> heightMap = new HashMap<>();

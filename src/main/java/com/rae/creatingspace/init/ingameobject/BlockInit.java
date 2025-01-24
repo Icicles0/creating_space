@@ -353,6 +353,14 @@ public class BlockInit {
             .properties(p-> p.tab(CreativeModeTabsInit.MINERALS_TAB))
             .build()
             .register();
+
+    public static final BlockEntry<Block> MOON_SAND = REGISTRATE
+            .block("moon_sand",Block::new).initialProperties(()-> Blocks.STONE)
+            .properties(p-> p.strength(1.0f).requiresCorrectToolForDrops())
+            .item()
+            .properties(p-> p.tab(CreativeModeTabsInit.MINERALS_TAB))
+            .build()
+            .register();
     public static final BlockEntry<Block> MOON_REGOLITH = REGISTRATE
             .block("moon_regolith",Block::new).initialProperties(()-> Blocks.DIRT)
             .properties(p-> p.strength(1.0f).sound(SoundType.SNOW).color(MaterialColor.SNOW))
@@ -617,6 +625,9 @@ public class BlockInit {
             .item()
             .build()
             .register();
+
+
+
     public static void register() {}
 
 }
