@@ -103,11 +103,11 @@ public class ItemInit {
                         name, Item::new)
                 .properties(p -> p.tab(CreativeModeTabsInit.COMPONENT_TAB))
                 .register();
-        //registerSequencedItem("incomplete_" + name);
+        registerSequencedItem("incomplete_" + name);
     }
 
-    private static ItemEntry<SequencedAssemblyItem> registerSequencedItem(String name) {
-        return CreatingSpace.REGISTRATE.item(
+    private static void registerSequencedItem(String name) {
+        CreatingSpace.REGISTRATE.item(
                         name, SequencedAssemblyItem::new)
                 .register();
     }

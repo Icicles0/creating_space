@@ -1,4 +1,4 @@
-![Creating Space Logo](https://cdn.discordapp.com/attachments/1134250316913717298/1270038586972049511/image.png?ex=66bec55b&is=66bd73db&hm=208ff7d2b832598b553f15ee2fb9fdc99cc0bd4c2cb329ff3d8d9dd8d4bec604&)
+![Creating Space Logo](https://realantengineer.github.io//assets/images/logo/creatingspace_text.png)
 
 ----
 
