@@ -49,7 +49,7 @@ public class RocketContraptionLaunchPacket extends SimplePacketBase {
                         schedule.entries.add(entry);*/
                         //ce.getEntityData().set(RUNNING_ENTITY_DATA_ACCESSOR, true);
                         //ce.schedule.setSchedule(schedule, true);
-                        ce.destination = destination;
+                        //ce.destination = destination;
                         //ce.setShouldHandleCalculation(true);
                         RocketContraptionEntity.handelTrajectoryCalculation(ce);
                     }

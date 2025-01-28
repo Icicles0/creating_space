@@ -116,7 +116,7 @@ public class RocketControlsBlockEntity extends SmartBlockEntity implements Namea
         }
 
         RocketContraptionEntity rocketContraptionEntity =
-                RocketContraptionEntity.create(level, contraption, destination);
+                RocketContraptionEntity.create(level, contraption);
         BlockPos anchor = worldPosition;
         rocketContraptionEntity.setPos(anchor.getX(), anchor.getY(), anchor.getZ());
         rocketContraptionEntity.setInitialPosMap(initialPosMap);

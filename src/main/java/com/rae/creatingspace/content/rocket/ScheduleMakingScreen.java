@@ -5,8 +5,6 @@ import com.jozufozu.flywheel.util.transform.TransformStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix4f;
-import com.rae.creatingspace.api.gui.elements.Orbit;
-import com.rae.creatingspace.api.planets.RocketAccessibleDimension;
 import com.rae.creatingspace.api.squedule.RocketSchedule;
 import com.rae.creatingspace.api.squedule.ScheduleEntry;
 import com.rae.creatingspace.api.squedule.condition.ScheduleWaitCondition;
@@ -25,7 +23,6 @@ import com.simibubi.create.foundation.gui.*;
 import com.simibubi.create.foundation.gui.element.GuiGameElement;
 import com.simibubi.create.foundation.gui.menu.AbstractSimiContainerScreen;
 import com.simibubi.create.foundation.gui.widget.*;
-import com.simibubi.create.foundation.item.TooltipHelper;
 import com.simibubi.create.foundation.utility.*;
 import com.simibubi.create.foundation.utility.animation.LerpedFloat;
 import net.minecraft.ChatFormatting;
@@ -41,16 +38,13 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.client.gui.ScreenUtils;
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 
 import java.util.*;
 import java.util.function.Consumer;
 
-import static com.rae.creatingspace.api.planets.OrbitParameter.BASE_BODY;
-
-public class NewDestinationScreen extends AbstractSimiContainerScreen<RocketMenu> {
+public class ScheduleMakingScreen extends AbstractSimiContainerScreen<RocketMenu> {
     //TODO transform hard coded schedule stuff to widgets
     //beginning of schedule logic
     private static final int CARD_HEADER = 22;
@@ -77,38 +71,23 @@ public class NewDestinationScreen extends AbstractSimiContainerScreen<RocketMenu
     private final RocketContraptionEntity rocketContraption;
     private final ResourceLocation currentDimension;
     private ResourceLocation destination;
-    private Orbit focusedPlanet = null;
-    private final Vector<Orbit> buttonVector;
     private LabeledBoxWidget destinationCost;
     private EditBox Xinput;
     private EditBox Zinput;
-    Couple<Color> red = Theme.p(Theme.Key.BUTTON_FAIL);
-    Couple<Color> green = Theme.p(Theme.Key.BUTTON_SUCCESS);
-    Couple<Color> idle = Theme.p(Theme.Key.BUTTON_IDLE);
     private IconButton validateSetting;
-    float zoom = 20f;
-    int xShift = 0;
-    int yShift = 0;
-    private Orbit sun;
 
-    public NewDestinationScreen(RocketMenu container, Inventory inv, Component title) {
+    public ScheduleMakingScreen(RocketMenu container, Inventory inv, Component title) {
         //TODO this screen will swith bwn normal selection (single trip), schedule and rocket overview.
         super(container, inv, Component.translatable("gui.destination_screen.title"));
         this.rocketContraption = container.contentHolder;
         this.initialPosMap = new HashMap<>(container.contentHolder.getInitialPosMap());
-        //this.background = GuiTexturesInit.ROCKET_CONTROLS;
         this.currentDimension = container.contentHolder.getLevel().dimension().location();
-        //initialise the map in the server side blockEntity to avoid issues
-        //this.mapOfAccessibleDimensionAndV = new HashMap<>(CSDimensionUtil.travelMap.get(currentDimension).adjacentDimensions());//rocket.getMapOfAccessibleDimensionAndV() == null ? new HashMap<>() : new HashMap<>(rocket.getMapOfAccessibleDimensionAndV());
-
-        this.buttonVector = new Vector<>(CSDimensionUtil.getTravelMap().size() + 1);
         this.destinationChanged = false;
         // schedule
         this.schedule = container.contentHolder.schedule.getSchedule() == null ? new RocketSchedule() : container.contentHolder.schedule.getSchedule();
         this.editorSubWidgets = new ModularGuiLine();
     }
 
-    //todo : zoom on double clic
     @Override
     protected void init() {
         setWindowSize(width, height);
@@ -117,42 +96,6 @@ public class NewDestinationScreen extends AbstractSimiContainerScreen<RocketMenu
         int x = leftPos;
         int y = topPos;
 
-        //add the orbits
-        sun = new Orbit(x + width / 2, y + height / 2, 0, new ResourceLocation("sun"));
-        sun.setBodyRadius(20);
-        Map<ResourceLocation, Orbit> temp = new HashMap<>();
-        temp.put(BASE_BODY, sun);
-        addRenderableOnly(sun);
-        buttonVector.add(0, sun);
-        focusedPlanet = sun;
-        //first collect all the planets
-        int row = 1;
-        //TODO add detection of loops
-        ArrayDeque<ResourceLocation> toVisit = new ArrayDeque<>(CSDimensionUtil.getTravelMap().keySet());
-        while (!toVisit.isEmpty()) {
-            ResourceLocation dim = toVisit.poll();
-            if (temp.containsKey(CSDimensionUtil.getTravelMap().get(dim).orbitedBody())) {
-                Orbit widget = new Orbit(x + width / 2, y + height / 2, CSDimensionUtil.getTravelMap().get(dim).distanceToOrbitedBody(), dim);
-                temp.put(dim, widget);
-                widget.withCallback(
-                        () -> {
-                            destination = widget.getDim();
-                            destinationChanged = true;
-                            focusedPlanet = widget;
-                        }
-                );
-                widget.setWindow(height, width);
-                buttonVector.add(
-                        row,
-                        widget);
-                row++;
-                addRenderableWidget(widget);
-                temp.get(CSDimensionUtil.getTravelMap().get(dim).orbitedBody()).addSatellite(widget);
-            } else {
-                toVisit.addLast(dim);
-            }
-        }
-        restZoom();
         //everything else
         disassembleButton = new Button(width - 110, y + 120, 16 * 4, 20,
                 Component.translatable("creatingspace.gui.rocket_controls.disassemble"),
@@ -268,18 +211,6 @@ public class NewDestinationScreen extends AbstractSimiContainerScreen<RocketMenu
 
     @Override
     protected void renderForeground(PoseStack ms, int mouseX, int mouseY, float partialTicks) {
-        int x = leftPos;
-        int y = topPos;
-        if (focusedPlanet != null) {
-            setXShift((int) (x + width / 2 - focusedPlanet.getPlanetX()));
-            setYShift((int) (y + height / 2 - focusedPlanet.getPlanetY()));
-            if (destinationChanged) {
-                if (focusedPlanet.getMaxSatelliteDistance() > 0) {
-                    zoom = (float) focusedPlanet.getMaxSatelliteDistance() / 80;
-                    changeZoom(0);
-                }
-            }
-        }
         if (editingDestination != null) {
             if (destinationChanged) {
                 BlockPos pos = initialPosMap.get(editingDestination.getData().getString("Text"));
@@ -322,17 +253,6 @@ public class NewDestinationScreen extends AbstractSimiContainerScreen<RocketMenu
             destinationCost.visible = false;
         }
 
-        for (int row = 0; row < buttonVector.size(); row++) {
-            Orbit widget = buttonVector.get(row);
-            if (destination == widget.getDim()) {
-                widget.withBorderColors(green);
-            } else if (destination != null) {
-                widget.withBorderColors(red);
-            } else {
-                widget.withBorderColors(idle);
-            }
-        }
-
         destinationChanged = false;
         //schedule
 
@@ -349,16 +269,6 @@ public class NewDestinationScreen extends AbstractSimiContainerScreen<RocketMenu
         GuiTexturesInit.ROCKET_INFO.render(ms, width - 130, 10);
         renderSchedule(ms, partialTicks);
         //render the background of the
-
-        if (editingCondition == null && editingDestination == null) {
-            setPlanetView(false);
-            return;
-        }
-        if (editingDestination != null) {
-            setPlanetView(false);
-
-            //fill(ms, 0, 0, width, height, 0xFF000000);
-        }
         AllGuiTextures.SCHEDULE_EDITOR.render(ms, leftPos - 2, topPos + 40);
         ms.pushPose();
         ms.translate(0, topPos + 87, 0);
@@ -368,13 +278,6 @@ public class NewDestinationScreen extends AbstractSimiContainerScreen<RocketMenu
         //background.render(ms, 0, 0, this);
     }
 
-    private void setPlanetView(boolean visible) {
-        buttonVector.forEach(
-                orbit -> {
-                    orbit.visible = visible;
-                }
-        );
-    }
     @Override
     public void containerTick() {
         //handleTooltips();
@@ -387,104 +290,6 @@ public class NewDestinationScreen extends AbstractSimiContainerScreen<RocketMenu
                 schedule.entries.isEmpty() ? 0 : Mth.clamp(schedule.savedProgress, 0, schedule.entries.size() - 1);
         resetProgress.active = schedule.savedProgress > 0;
         skipProgress.active = schedule.entries.size() > 1;
-    }
-
-    protected void handleTooltips() {
-        if (destination == null)
-            return;
-
-        if (destinationCost != null) {
-            LabeledBoxWidget button = destinationCost;
-            Component tooltipText = Component.translatable("creatingspace.gui.rocket_controls.destination_cost");
-            // Check if the tooltip already contains the desired text
-            if (!button.getToolTip().contains(tooltipText)) {
-                button.getToolTip().add(tooltipText);
-            }
-        }
-    }
-
-    //xShift, yShift independent of player input ?
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        boolean flag = super.keyPressed(keyCode, scanCode, modifiers);
-        if (GLFW.GLFW_KEY_ESCAPE == keyCode) {
-            restZoom();
-        }
-        if (GLFW.GLFW_KEY_LEFT_CONTROL == keyCode) {
-            changeZoom(0.01f);
-        }
-        if (GLFW.GLFW_KEY_LEFT_SHIFT == keyCode) {
-            changeZoom(-0.01f);
-        }
-        return flag;
-    }
-
-    //should reset everything
-    private void restZoom() {
-        zoom = 20f;
-        for (Orbit orbit :
-                buttonVector) {
-            orbit.setZoom(zoom);
-        }
-        setFocused(null);
-        destination = null;
-        focusedPlanet = sun;
-    }
-    private void changeZoom(float amount) {
-        zoom += amount * zoom;
-        if (zoom <= 0.01f) {
-            zoom = 0.01f;
-        }
-        for (Orbit orbit :
-                buttonVector) {
-            orbit.setZoom(zoom);
-        }
-    }
-
-    private void shiftX(int amount) {
-        xShift += amount;
-        for (Orbit orbit :
-                buttonVector) {
-            orbit.shiftX(amount);
-        }
-    }
-
-    private void setXShift(int xShift) {
-        this.xShift = xShift;
-        for (Orbit orbit :
-                buttonVector) {
-            orbit.setxShift(xShift);
-        }
-    }
-
-    private void shiftY(int amount) {
-        yShift += amount;
-        for (Orbit orbit :
-                buttonVector) {
-            orbit.shiftY(amount);
-        }
-    }
-
-    private void setYShift(int yShift) {
-        this.yShift = yShift;
-        for (Orbit orbit :
-                buttonVector) {
-            orbit.setyShift(yShift);
-        }
-    }
-
-    @Override
-    public boolean shouldCloseOnEsc() {
-        return focusedPlanet == sun;
-    }
-
-    private void fillToolTip(IconButton button, String tooltipKey) {
-        if (!button.isHoveredOrFocused())
-            return;
-        List<Component> tip = button.getToolTip();
-
-        tip.addAll(TooltipHelper
-                .cutTextComponent(Component.translatable("creatingspace.gui.rocket_controls." + tooltipKey + ".description"), TooltipHelper.Palette.ALL_GRAY));
     }
 
     //schedule logic

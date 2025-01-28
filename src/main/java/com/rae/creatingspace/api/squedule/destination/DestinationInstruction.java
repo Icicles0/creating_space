@@ -12,6 +12,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +42,7 @@ public class DestinationInstruction extends ScheduleInstruction {
 
     public ResourceLocation getDestination() {
         updateDataFromId();
-        String data = textData("Text");
+        String data = textData("destination");
         if (data.isBlank())
             return null;
         return ResourceLocation.tryParse(data);
@@ -50,7 +51,7 @@ public class DestinationInstruction extends ScheduleInstruction {
     private void updateDataFromId() {
         int id = intData("intId");
         if (planets != null && id < planets.size()) {
-            data.putString("Text", planets.get(id).toString());
+            data.putString("destination", planets.get(id).toString());
         }
     }
 
@@ -75,19 +76,20 @@ public class DestinationInstruction extends ScheduleInstruction {
     public List<Component> getTitleAs(String type) {
         updateDataFromId();
         return ImmutableList.of(Lang.translateDirect("schedule." + type + "." + getId().getPath() + ".summary")
-                .withStyle(ChatFormatting.GOLD), Lang.translateDirect("generic.in_quotes", Components.translatable(textData("Text"))));
+                .withStyle(ChatFormatting.GOLD), Lang.translateDirect("generic.in_quotes", Components.translatable(textData("destination"))));
     }
 
 
     @Override
     @OnlyIn(Dist.CLIENT)
     public void initConfigurationWidgets(ModularGuiLineBuilder builder) {
-        //TODO make a "planetarium" widget (which extend EditBox)
         planets = getPlanets();
         builder.addSelectionScrollInput(0, 121, (s, t) -> {
                     s.forOptions(planets.stream().map(r -> Component.translatable(r.toString())).toList());
                 },
                 "intId");
+        builder.addIntegerTextInput(130, 30,(editBox,tooltipArea) ->{},"XCoord");
+        builder.addIntegerTextInput(200, 30,(editBox,tooltipArea) ->{},"ZCoord");
     }
 
     @NotNull
@@ -95,4 +97,10 @@ public class DestinationInstruction extends ScheduleInstruction {
         return CSDimensionUtil.getPlanets();
     }
 
+    public Vec2 getXYCoord() {
+        updateDataFromId();
+        int X = data.getInt("XCoord");
+        int Z = data.getInt("ZCoord");
+        return new Vec2(X,Z);
+    }
 }

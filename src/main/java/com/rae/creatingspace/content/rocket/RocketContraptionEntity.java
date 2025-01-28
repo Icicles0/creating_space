@@ -33,7 +33,6 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -100,8 +99,8 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
     public BlockPos rocketEntryCoordinate = new BlockPos(0,0,0);
     public float totalThrust = 0;
     public float initialMass;
-    public ResourceLocation originDimension = Level.OVERWORLD.location();
-    public ResourceLocation destination;
+    //public ResourceLocation originDimension = Level.OVERWORLD.location();
+    //public ResourceLocation destination;
     private List<BlockPos> localPosOfFlightRecorders;
 
     public FlightDataHelper.RocketAssemblyData assemblyData;
@@ -117,6 +116,7 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
             SynchedEntityData.defineId(RocketContraptionEntity.class, EntityDataSerializers.BOOLEAN);*/
     public static final EntityDataAccessor<RocketStatus> STATUS_DATA_ACCESSOR =
             SynchedEntityData.defineId(RocketContraptionEntity.class, EntityDataSerializersInit.STATUS_SERIALIZER);
+    public RocketPath nextPath;
 
 
     //initializing and saving methods
@@ -127,12 +127,9 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
         schedule = new RocketScheduleRuntime(this);
     }
 
-    public static RocketContraptionEntity create(Level level, RocketContraption contraption, ResourceLocation destination) {
+    public static RocketContraptionEntity create(Level level, RocketContraption contraption) {
         RocketContraptionEntity entity =
                 new RocketContraptionEntity(EntityInit.ROCKET_CONTRAPTION.get(), level);
-        entity.originDimension = level.dimension().location();
-        entity.destination = destination;//will be set after the
-
         entity.setContraption(contraption);
         entity.theoreticalPerTagFluidConsumption = contraption.getTPTFluidConsumption();
         entity.realPerTagFluidConsumption = new HashMap<>();
@@ -151,11 +148,10 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
      * should only be used on the server
      */
     public static void handelTrajectoryCalculation(@NotNull RocketContraptionEntity rocketContraptionEntity) {
-        //System.out.println(rocketContraptionEntity.deltaV());
-
+        //TODO we need to make the inventory manager now !!!!!!!!!!!
         RocketContraption contraption = (RocketContraption) rocketContraptionEntity.contraption;
 
-        float deltaVNeeded = CSDimensionUtil.cost(rocketContraptionEntity.originDimension, rocketContraptionEntity.destination);
+        float deltaVNeeded = (float) rocketContraptionEntity.nextPath.cost;
         if (CSConfigs.COMMON.additionalLogInfo.get()){
             CreatingSpace.LOGGER.info("-------------------trajectory calculation---------------------");
         }
@@ -230,9 +226,6 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
             CreatingSpace.LOGGER.info("estimated propellant consumption : "+ consumedPropellantMass+ " Kg");
         }
 
-        //mean consumption -> make the consumption diff between CH4 and 02 -> adding H2 for advanced engine ?
-        //a map of fluidTag/ Integer
-        //should rather calculate the deltaV max ?
         rocketContraptionEntity.initialMass = emptyMass+initialPropellantMass;
 
         int distance = (int) (300 - rocketContraptionEntity.position().y());
@@ -297,16 +290,7 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
             CreatingSpace.LOGGER.info("determining if the rocket can go :");
             CreatingSpace.LOGGER.info(assemblyData);
         }
-        //rocketContraptionEntity.failedToLaunch = assemblyData.hasFailed();//just for the fluids
-
-        /*//may need to put that on the RocketAssemblyData ( when doing the automatic rocket : 1.7 )
-        if (acceleration <=0 ){
-            //rocketContraptionEntity.failedToLaunch = true;
-            rocketContraptionEntity.getEntityData().set(STATUS_DATA_ACCESSOR, RocketStatus.BLOCKED);
-            return;
-        }*/
         if (distance<=0){
-            //rocketContraptionEntity.failedToLaunch = true;
             rocketContraptionEntity.getEntityData().set(STATUS_DATA_ACCESSOR, RocketStatus.BLOCKED);
             return;
         }
@@ -524,7 +508,7 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
 
             ServerLevel destServerLevel = this.level.getServer().getLevel(
                     ResourceKey.create(Registry.DIMENSION_REGISTRY,
-                            this.destination)
+                            this.nextPath.destination)
             );
 
             if (destServerLevel!=null /*&& level.dimension() == this.originDimension*/) {
@@ -537,7 +521,7 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
                 LOGGER.info("rocket info :");
                 LOGGER.info("destination :" + destServerLevel);
                 LOGGER.info("current dimension :" + level.dimension());
-                LOGGER.info("origin Dimension : " + this.originDimension);
+                LOGGER.info("origin Dimension : " + this.nextPath.destination);
                 LOGGER.info("gravity of current dimension" + CSDimensionUtil.gravity(this.level.dimensionTypeId().location()));
             }
         }
@@ -819,10 +803,8 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
         this.partialDrainAmountPerFluid = CODEC_MAP_CONSUMPTION.parse(NbtOps.INSTANCE, compound.getCompound("partialDrainAmountPerFluid")).result().orElse(new HashMap<>());
         this.assemblyData = FlightDataHelper.RocketAssemblyData.fromNBT(compound.getCompound("assemblyData"));
         this.entityData.set(STATUS_DATA_ACCESSOR, RocketStatus.valueOf(compound.getString("status")));
-        this.destination = ResourceLocation.CODEC.parse(NbtOps.INSTANCE, compound.get("destination")).get().orThrow();
 
-        this.originDimension =
-                ResourceLocation.CODEC.parse(NbtOps.INSTANCE, compound.get("origin")).get().orThrow();
+        this.nextPath = RocketPath.parse((CompoundTag) compound.get("nextPath"));
         this.schedule.read((CompoundTag) compound.get("Runtime"));
         for (PropellantType combination : realPerTagFluidConsumption.keySet()) {
             for (TagKey<Fluid> fluid :
@@ -845,8 +827,7 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
         compound.put("assemblyData", FlightDataHelper.RocketAssemblyData.toNBT(this.assemblyData));
         compound.putFloat("thrust", this.totalThrust);
         compound.putString("status", this.entityData.get(STATUS_DATA_ACCESSOR).toString());
-        compound.put("origin", ResourceLocation.CODEC.encodeStart(NbtOps.INSTANCE, this.originDimension).get().orThrow());
-        compound.put("destination", ResourceLocation.CODEC.encodeStart(NbtOps.INSTANCE, this.destination).get().orThrow());
+        compound.put("nextPath",nextPath!=null?nextPath.serialize():new CompoundTag());
         compound.put("Runtime", schedule.write());
 
         super.writeAdditional(compound, spawnPacket);
@@ -925,8 +906,8 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
     public int startNavigation(RocketPath nextPath) {
         if (!level.isClientSide()) {
             //so the pos is initialized
-            this.originDimension = nextPath.origin;
-            this.destination = nextPath.destination;
+            this.nextPath = nextPath;
+            //this.destination = nextPath.destination;
             getEntityData().set(STATUS_DATA_ACCESSOR, RocketStatus.TRAVELING);
 
             shouldHandleCalculation = false;

@@ -196,7 +196,7 @@ public class RocketScheduleRuntime {
             if (cost <= 0) {
                 return null;
             } else {
-                return new RocketPath(currentWorld, destinationWorld, cost);
+                return new RocketPath(currentWorld, destinationWorld, destination.getXYCoord(),cost);
             }
         }
 
