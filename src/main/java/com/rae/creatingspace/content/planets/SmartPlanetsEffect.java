@@ -7,20 +7,23 @@ import com.mojang.math.Matrix4f;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
 import com.rae.creatingspace.api.planets.OrbitParameter;
+import com.simibubi.create.foundation.render.RenderTypes;
 import com.simibubi.create.foundation.utility.Color;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.DimensionSpecialEffects;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.NonnullDefault;
+
+import java.util.List;
+
+import static com.rae.creatingspace.api.rendering.GeometryRendering.renderPolyTex;
 
 @NonnullDefault
 public class SmartPlanetsEffect extends DimensionSpecialEffects {
@@ -56,6 +59,7 @@ public class SmartPlanetsEffect extends DimensionSpecialEffects {
         return true;
     }
 
+    //TODO implement alpha channel for the fog
     @Override
     public boolean renderSky(ClientLevel level, int ticks, float partialTick, PoseStack poseStack, Camera camera, Matrix4f projectionMatrix, boolean isFoggy, Runnable setupFog) {
         float[] fogColor = RenderSystem.getShaderFogColor();
@@ -63,9 +67,11 @@ public class SmartPlanetsEffect extends DimensionSpecialEffects {
                 (float) Minecraft.getInstance().getWindow().getHeight();
 
         // Retrieve the dynamic FOV
-
-        RenderSystem.setShaderFogColor(0,0,0,0);
-
+        //no alpha for the fog ?
+        Color color = new Color(level.getBiome(camera.getBlockPosition()).get().getSkyColor());
+        RenderSystem.setShaderFogStart(-1);
+        RenderSystem.setShaderFogEnd(0);
+        RenderSystem.setShaderFogColor(fogColor[0],fogColor[1],fogColor[2],color.getAlphaAsFloat());
         RenderSystem.depthMask(false);
 
         RenderSystem.enableBlend();
@@ -75,6 +81,7 @@ public class SmartPlanetsEffect extends DimensionSpecialEffects {
         OrbitParameter orbitParameter = PlanetsPositionsHandler.getOrbitParam(location);
         float time = (level.getDayTime()+partialTick)/dayLength;
         //render space sky uses way too much pos stack calls
+        //vibration of the screen ? it's carried by the projection matrix...
         Matrix4f customProjection = Matrix4f.perspective(FovHandler.getCurrentFov(), aspectRatio, 0.0001f, 1000.0f); // Near plane set to 0.01
         RenderSystem.backupProjectionMatrix();
         RenderSystem.setProjectionMatrix(customProjection);
@@ -84,21 +91,20 @@ public class SmartPlanetsEffect extends DimensionSpecialEffects {
         poseStack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
         poseStack.mulPose(Vector3f.XP.rotationDegrees(90.0F));
         float timeOfDay = level.getTimeOfDay(time*dayLength);
-        Color color = new Color(level.getBiome(camera.getBlockPosition()).get().getSkyColor());
         //System.out.println("red : "+color.getRed()+" green : "+color.getGreen()+" blue : "+color.getBlue()+" alpha : "+color.getAlpha());
-        renderSpaceSky(poseStack,new Quaternion(new Vector3f(orbitParameter.rotationAxis()), (float) (-2*time/orbitParameter.rotT()* Math.PI),false)
-        );
+        renderSpaceSky(poseStack,new Quaternion(new Vector3f(orbitParameter.rotationAxis()), (float) (-2*time/orbitParameter.rotT()* Math.PI),false),bufferSource);
 
         PlanetsPositionsHandler.renderForAll(time,poseStack,bufferSource,location, false,Color.WHITE);
         poseStack.popPose();
-        renderColoredSky(poseStack,color);
+        //renderColoredSky(poseStack,color);
 
 
 
 
         bufferSource.endBatch();
         RenderSystem.restoreProjectionMatrix();
-        RenderSystem.setShaderFogColor(fogColor[0],fogColor[1],fogColor[2], fogColor[3]);
+        FogRenderer.levelFogColor();
+        setupFog.run();
         RenderSystem.enableDepthTest();
         RenderSystem.depthMask(true);
         RenderSystem.depthFunc(GL11.GL_LEQUAL); // Standard depth function
@@ -106,81 +112,70 @@ public class SmartPlanetsEffect extends DimensionSpecialEffects {
         return true;
     }
     //doesn't work right
-    private static void renderSpaceSky(PoseStack poseStack, Quaternion planetRotation) {
-        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        RenderSystem.setShaderTexture(0, SPACE_SKY_LOCATION);
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferbuilder = tesselator.getBuilder();
+    private static void renderSpaceSky(PoseStack poseStack, Quaternion planetRotation, MultiBufferSource buffer) {
+        // Prepare the vertex consumer for rendering
+        VertexConsumer planetBuffer = buffer.getBuffer(RenderTypes.getGlowingSolid(SPACE_SKY_LOCATION));
+
+        // Base size and distance values
+        float size = 200.0F;
+        float distance = 200.0F;
+
+        // Color to be used for rendering
+        Color color = Color.WHITE;
 
         poseStack.mulPose(planetRotation);
 
-        for(int i = 0; i < 6; ++i) {
-            //poseStack.pushPose();
-            //poseStack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
-            //poseStack.mulPose(Vector3f.XP.rotation(90));
-            //make all the face
-            if (i == 1) {
-                poseStack.mulPose(Vector3f.XP.rotationDegrees(90.0F));
+        for (int i = 0; i < 6; ++i) {
+            // Apply rotation for each face
+            switch (i) {
+                case 1 -> poseStack.mulPose(Vector3f.XP.rotationDegrees(90.0F));
+                case 2 -> poseStack.mulPose(Vector3f.XP.rotationDegrees(-90.0F));
+                case 3 -> poseStack.mulPose(Vector3f.XP.rotationDegrees(180.0F));
+                case 4 -> poseStack.mulPose(Vector3f.ZP.rotationDegrees(90.0F));
+                case 5 -> poseStack.mulPose(Vector3f.ZP.rotationDegrees(-90.0F));
             }
 
-            if (i == 2) {
-                poseStack.mulPose(Vector3f.XP.rotationDegrees(-90.0F));
-            }
+            // UV mapping for the current face
+            int l = i % 3;      // Column index in the texture
+            int i1 = i / 3;     // Row index in the texture
+            float colBegin = (float) l / 3.0F;         // Start of the column
+            float rowBegin = (float) i1 / 2.0F;        // Start of the row
+            float colEnd = (float) (l + 1) / 3.0F;     // End of the column
+            float rowEnd = (float) (i1 + 1) / 2.0F;    // End of the row
 
-            if (i == 3) {
-                poseStack.mulPose(Vector3f.XP.rotationDegrees(180.0F));
-            }
+            List<Vec2> uvVector = List.of(
+                    new Vec2(colEnd, rowEnd),    // Top-right
+                    new Vec2(colBegin, rowEnd), // Top-left
+                    new Vec2(colBegin, rowBegin), // Bottom-left
+                    new Vec2(colEnd, rowBegin)  // Bottom-right
+            );
 
-            if (i == 4) {
-                poseStack.mulPose(Vector3f.ZP.rotationDegrees(90.0F));
-            }
+            // Define the vertices of the current face
+            List<Vec3> pos = List.of(
+                    new Vec3(-size, -distance, -size), // Bottom-left
+                    new Vec3(-size, -distance, size),  // Top-left
+                    new Vec3(size, -distance, size),   // Top-right
+                    new Vec3(size, -distance, -size)   // Bottom-right
+            );
 
-            if (i == 5) {
-                poseStack.mulPose(Vector3f.ZP.rotationDegrees(-90.0F));
-            }
+            // Render the face
+            renderPolyTex(pos, uvVector, planetBuffer, poseStack.last(), LightTexture.FULL_BRIGHT, color);
 
-            int l = i % 3;
-            int i1 = i / 4 % 2;
-            float col_begin = (float)(l) / 3.0F;
-            float l_begin = (float)(i1) / 2.0F;
-            float col_end = (float)(l + 1) / 3.0F;
-            float l_end = (float)(i1 + 1) / 2.0F;
-
-            float size = 200.0F;
-            float distance = 200.0F;
-            Matrix4f matrix4f = poseStack.last().pose();
-            bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-            bufferbuilder.vertex(matrix4f, -size, -distance, -size).uv(col_end, l_end).color(Color.WHITE.getRed(), Color.WHITE.getGreen(), Color.WHITE.getBlue(), Color.WHITE.getAlpha()).endVertex();
-            bufferbuilder.vertex(matrix4f, -size, -distance, size).uv(col_begin, l_end).color(Color.WHITE.getRed(), Color.WHITE.getGreen(), Color.WHITE.getBlue(), Color.WHITE.getAlpha()).endVertex();
-            bufferbuilder.vertex(matrix4f, size, -distance, size).uv(col_begin, l_begin).color(Color.WHITE.getRed(), Color.WHITE.getGreen(), Color.WHITE.getBlue(), Color.WHITE.getAlpha()).endVertex();
-            bufferbuilder.vertex(matrix4f, size, -distance, -size).uv(col_end, l_begin).color(Color.WHITE.getRed(), Color.WHITE.getGreen(), Color.WHITE.getBlue(), Color.WHITE.getAlpha()).endVertex();
-            BufferUploader.drawWithShader(bufferbuilder.end());
-            //tesselator.end();
-
-            if (i == 1) {
-                poseStack.mulPose(Vector3f.XN.rotationDegrees(90.0F));
-            }
-
-            if (i == 2) {
-                poseStack.mulPose(Vector3f.XN.rotationDegrees(-90.0F));
-            }
-
-            if (i == 3) {
-                poseStack.mulPose(Vector3f.XN.rotationDegrees(180.0F));
-            }
-
-            if (i == 4) {
-                poseStack.mulPose(Vector3f.ZN.rotationDegrees(90.0F));
-            }
-
-            if (i == 5) {
-                poseStack.mulPose(Vector3f.ZN.rotationDegrees(-90.0F));
+            // Revert rotation for the next face
+            switch (i) {
+                case 1 -> poseStack.mulPose(Vector3f.XN.rotationDegrees(90.0F));
+                case 2 -> poseStack.mulPose(Vector3f.XN.rotationDegrees(-90.0F));
+                case 3 -> poseStack.mulPose(Vector3f.XN.rotationDegrees(180.0F));
+                case 4 -> poseStack.mulPose(Vector3f.ZN.rotationDegrees(90.0F));
+                case 5 -> poseStack.mulPose(Vector3f.ZN.rotationDegrees(-90.0F));
             }
         }
+
         planetRotation.conj();
         poseStack.mulPose(planetRotation);
         planetRotation.conj();
     }
+
 
     private static void renderColoredSky(PoseStack poseStack, Color skyColor) {
         // Bind no texture
