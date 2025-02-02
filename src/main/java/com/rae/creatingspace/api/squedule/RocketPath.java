@@ -26,7 +26,7 @@ public class RocketPath {
     public CompoundTag serialize() {
         CompoundTag nextPath = new CompoundTag();
         nextPath.putString("origin",origin.toString());
-        nextPath.putString("destination",origin.toString());
+        nextPath.putString("destination",destination.toString());
         nextPath.putInt("XCoord", (int) XZCoord.x);
         nextPath.putInt("ZCoord", (int) XZCoord.y);
         nextPath.putDouble("cost",cost);

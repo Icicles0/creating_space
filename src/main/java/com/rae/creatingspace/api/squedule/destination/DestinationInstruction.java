@@ -3,6 +3,8 @@ package com.rae.creatingspace.api.squedule.destination;
 import com.google.common.collect.ImmutableList;
 import com.rae.creatingspace.CreatingSpace;
 import com.rae.creatingspace.content.planets.CSDimensionUtil;
+import com.rae.creatingspace.legacy.utilities.CSNBTUtil;
+import com.rae.creatingspace.legacy.utilities.CSUtil;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.foundation.gui.ModularGuiLineBuilder;
 import com.simibubi.create.foundation.utility.Components;
@@ -89,7 +91,7 @@ public class DestinationInstruction extends ScheduleInstruction {
                 },
                 "intId");
         builder.addIntegerTextInput(130, 30,(editBox,tooltipArea) ->{},"XCoord");
-        builder.addIntegerTextInput(200, 30,(editBox,tooltipArea) ->{},"ZCoord");
+        builder.addIntegerTextInput(170, 30,(editBox,tooltipArea) ->{},"ZCoord");
     }
 
     @NotNull
@@ -99,8 +101,8 @@ public class DestinationInstruction extends ScheduleInstruction {
 
     public Vec2 getXYCoord() {
         updateDataFromId();
-        int X = data.getInt("XCoord");
-        int Z = data.getInt("ZCoord");
+        int X = CSUtil.isInteger(data.getString("XCoord"))?Integer.parseInt(data.getString("XCoord")):0;
+        int Z =  CSUtil.isInteger(data.getString("ZCoord"))?Integer.parseInt(data.getString("ZCoord")):0;
         return new Vec2(X,Z);
     }
 }

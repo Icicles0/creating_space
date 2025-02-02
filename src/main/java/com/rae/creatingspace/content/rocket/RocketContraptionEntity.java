@@ -17,7 +17,6 @@ import com.rae.creatingspace.content.planets.CSDimensionUtil;
 import com.rae.creatingspace.legacy.utilities.CSNBTUtil;
 import com.rae.creatingspace.legacy.utilities.data.FlightDataHelper;
 import com.rae.creatingspace.content.rocket.network.RocketContraptionUpdatePacket;
-import com.rae.creatingspace.content.rocket.network.RocketEntryPosMapClientPacket;
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
 import com.simibubi.create.content.contraptions.ContraptionCollider;
 import com.simibubi.create.content.contraptions.StructureTransform;
@@ -96,24 +95,14 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
             TagKey.codec(Registry.FLUID_REGISTRY),
             Codec.FLOAT
     ).xmap(HashMap::new, i -> i);
-    public BlockPos rocketEntryCoordinate = new BlockPos(0,0,0);
     public float totalThrust = 0;
     public float initialMass;
-    //public ResourceLocation originDimension = Level.OVERWORLD.location();
-    //public ResourceLocation destination;
-    private List<BlockPos> localPosOfFlightRecorders;
-
-    public FlightDataHelper.RocketAssemblyData assemblyData;
+    private List<BlockPos> localPosOfFlightRecorders;//will be transferred to the rocket controls, or it's equivalent
+    public FlightDataHelper.RocketAssemblyData assemblyData;//this is shit, we need the freaking inventory manager
 
     //TODO make a record and CODEC
     public HashMap<TagKey<Fluid>, ArrayList<Fluid>> consumableFluids = new HashMap<>();//
-    private HashMap<String, BlockPos> initialPosMap;
     public RocketScheduleRuntime schedule;
-    /*public static final EntityDataAccessor<Boolean> REENTRY_ENTITY_DATA_ACCESSOR =
-            SynchedEntityData.defineId(RocketContraptionEntity.class, EntityDataSerializers.BOOLEAN);
-    //used to now if the rocket need to move or not ( just assemble or finished the list of instruction)
-    public static final EntityDataAccessor<Boolean> RUNNING_ENTITY_DATA_ACCESSOR =
-            SynchedEntityData.defineId(RocketContraptionEntity.class, EntityDataSerializers.BOOLEAN);*/
     public static final EntityDataAccessor<RocketStatus> STATUS_DATA_ACCESSOR =
             SynchedEntityData.defineId(RocketContraptionEntity.class, EntityDataSerializersInit.STATUS_SERIALIZER);
     public RocketPath nextPath;
@@ -301,7 +290,6 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
         rocketContraptionEntity.getEntityData().set(STATUS_DATA_ACCESSOR, RocketStatus.TRAVELING);
     }
 
-    //the rocket kill itself upon arrival in other dim
     public float deltaV() {
         //wrong because no consideration for the ratio of propellants
         float totalThrust = 0;
@@ -396,7 +384,6 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
         return perTickSpeed;
     }
 
-    // used to know if the rocket is going up or down
     @Override
     public void disassemble() {
         //doesn't work with create_interactive
@@ -614,7 +601,7 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
 
     @Nullable
     @Override
-    public Entity changeDimension(ServerLevel destLevel, ITeleporter teleporter) {
+    public Entity changeDimension(ServerLevel destLevel, @NotNull ITeleporter teleporter) {
         //rewrite so passengers get teleported with it
         if (!ForgeHooks.onTravelToDimension(this, destLevel.dimension())) return null;
         if (this.level instanceof ServerLevel && !this.isRemoved()) {
@@ -718,7 +705,7 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
     @Override
     protected void handleStallInformation(double x, double y, double z, float angle) {
         setPosRaw(x, y, z);
-        clientOffsetDiff = 0;
+        //clientOffsetDiff = 0; ?? what is this used for ?
     }
 
     @Override
@@ -739,7 +726,7 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
     //network and client only
 
     @Override
-    public AABB getBoundingBoxForCulling() {
+    public @NotNull AABB getBoundingBoxForCulling() {
         /*return isInPropulsionPhase() ?
                 new AABB(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE,
                         Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE) :
@@ -794,7 +781,6 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
     @Override
     protected void readAdditional(CompoundTag compound, boolean spawnData) {
         super.readAdditional(compound, spawnData);
-        this.initialPosMap = getPosMap((CompoundTag) compound.get("initialPosMap"));
         this.localPosOfFlightRecorders = CSNBTUtil.LongsToBlockPos(compound.getLongArray("localPosOfFlightRecorders"));//to remove
         this.totalThrust = compound.getFloat("thrust");
         this.initialMass = compound.getFloat("initialMass");
@@ -817,7 +803,6 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
 
     @Override
     protected void writeAdditional(CompoundTag compound, boolean spawnPacket) {
-        compound.put("initialPosMap", putPosMap(this.initialPosMap, new CompoundTag()));
         compound.putLongArray("localPosOfFlightRecorders", CSNBTUtil.BlockPosToLong(this.localPosOfFlightRecorders));//to remove
         compound.putFloat("initialMass", this.initialMass);
         compound.put("theoreticalPerTagFluidConsumption", CODEC_MAP_INFO.encodeStart(NbtOps.INSTANCE, this.theoreticalPerTagFluidConsumption).get().left().orElse(new CompoundTag()));
@@ -850,45 +835,6 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
     public boolean isInPropulsionPhase() {
         return this.entityData.get(STATUS_DATA_ACCESSOR).propelled_phase;
     }
-
-    public static CompoundTag putPosMap(HashMap<String, BlockPos> initialPosMap, CompoundTag compound) {
-        if (compound == null) {
-            compound = new CompoundTag();
-        }
-        for (String key : initialPosMap.keySet()) {
-            compound.putLong("dimensionInitialPosOf:" + key, initialPosMap.get(key).asLong());
-        }
-
-        return compound;
-    }
-
-    public static HashMap<String, BlockPos> getPosMap(CompoundTag compound) {
-        HashMap<String, BlockPos> initialPosMap = new HashMap<>();
-
-        if (compound != null) {
-            for (String key : compound.getAllKeys()) {
-                if (key.contains("dimensionInitialPosOf:")) {
-                    initialPosMap.put(
-                            key.substring(22),
-                            BlockPos.of(compound.getLong(key)));
-                }
-            }
-        }
-
-        return initialPosMap;
-    }
-
-    public HashMap<String, BlockPos> getInitialPosMap() {
-        return initialPosMap;
-    }
-    public void setInitialPosMap(HashMap<String, BlockPos> map) {
-        initialPosMap = map;
-        if (level.isClientSide){
-            PacketInit.getChannel()
-                    .sendToServer(new RocketEntryPosMapClientPacket(this.getId(), initialPosMap));
-        }
-    }
-
     //navigation part (schedule)
     public void successfulNavigation() {
     }
@@ -907,7 +853,7 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
         if (!level.isClientSide()) {
             //so the pos is initialized
             this.nextPath = nextPath;
-            //this.destination = nextPath.destination;
+            //this.rocketEntryCoordinate = new BlockPos(nextPath.XZCoord.x,CSDimensionUtil.arrivalHeight(nextPath.destination),nextPath.XZCoord.y);
             getEntityData().set(STATUS_DATA_ACCESSOR, RocketStatus.TRAVELING);
 
             shouldHandleCalculation = false;
