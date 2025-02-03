@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:add",
+  "argument1": {
+    "type": "creatingspace:asteroids"
+  },
+  "argument2": "minecraft:end/base_3d_noise"
+}

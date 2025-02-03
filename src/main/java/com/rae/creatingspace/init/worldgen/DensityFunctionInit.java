@@ -1,0 +1,21 @@
+package com.rae.creatingspace.init.worldgen;
+
+import com.mojang.serialization.Codec;
+import com.rae.creatingspace.CreatingSpace;
+import com.rae.creatingspace.content.worldgen.CustomDensityFunctions;
+import net.minecraft.core.Registry;
+import net.minecraft.world.level.levelgen.DensityFunction;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
+
+public class DensityFunctionInit {
+    private static final DeferredRegister<Codec<? extends DensityFunction>> DENSITY_FUNCTIONS = DeferredRegister.create(Registry.DENSITY_FUNCTION_TYPE_REGISTRY, CreatingSpace.MODID);
+
+    public static final RegistryObject<Codec<CustomDensityFunctions.AsteroidNoise>> ASTEROID_FUNCTION = DENSITY_FUNCTIONS
+            .register("asteroids", CustomDensityFunctions.AsteroidNoise.CODEC::codec);
+
+    public static void register(IEventBus bus){
+        DENSITY_FUNCTIONS.register(bus);
+    }
+}
