@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:mul",
+  "argument1": {
+    "type": "minecraft:add",
+    "argument1": {
+      "type": "minecraft:abs",
+      "argument": {
+        "type": "minecraft:noise",
+        "noise": "creatingspace:worley",
+        "xz_scale": 1,
+        "y_scale": 1
+      }
+    },
+    "argument2": -0.7
+  },
+  "argument2": 4
+}
