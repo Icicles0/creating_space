@@ -1,7 +1,15 @@
 {
   "type": "minecraft:add",
+
   "argument1": {
-    "type": "creatingspace:asteroids"
+    "type": "minecraft:mul",
+    "argument1":{
+      "type": "creatingspace:worley_noise",
+      "xz_size": 32,
+      "y_size": 32,
+      "scale_factor": 1
+    },
+    "argument2": 1
   },
-  "argument2": "minecraft:end/base_3d_noise"
+  "argument2": 0
 }

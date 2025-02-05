@@ -1,12 +1,11 @@
 package com.rae.creatingspace.content.worldgen;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.KeyDispatchDataCodec;
-import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.DensityFunction;
-import net.minecraft.world.level.levelgen.LegacyRandomSource;
-import net.minecraft.world.level.levelgen.synth.SimplexNoise;
+import org.jetbrains.annotations.NotNull;
 
 public class CustomDensityFunctions {
 
@@ -14,58 +13,39 @@ public class CustomDensityFunctions {
     //  with amplitudes and all of that
 
     //direct copy of endIsland noise to understand what it does
-    public static final class AsteroidNoise implements DensityFunction.SimpleFunction {
-        public static final KeyDispatchDataCodec<AsteroidNoise> CODEC =
-                KeyDispatchDataCodec.of(MapCodec.unit(new AsteroidNoise(0L)));//that's really weird no ?
-        private static final float ISLAND_THRESHOLD = -0.9F;
-        private final SimplexNoise islandNoise;
+   public static final class WorleyDensityFunction implements DensityFunction.SimpleFunction {
+        WorleyNoise noise;
+        public static final MapCodec<WorleyDensityFunction> DATA_CODEC = RecordCodecBuilder.mapCodec((instance) -> {
+            return instance.group(
+                    Codec.DOUBLE.fieldOf("xz_size").forGetter(i -> i.noise.getXZSize()),
+                    Codec.DOUBLE.fieldOf("y_size").forGetter(i -> i.noise.getYSize()),
+                    Codec.DOUBLE.fieldOf("scale_factor").forGetter(i -> i.noise.getScaleFactor()))
+                    .apply(instance, WorleyDensityFunction::new);
+        });
 
-        public AsteroidNoise(long seed) {
-            RandomSource randomsource = new LegacyRandomSource(seed);
-            randomsource.consumeCount(17292);
-            this.islandNoise = new SimplexNoise(randomsource);
+        public static final KeyDispatchDataCodec<WorleyDensityFunction> CODEC = KeyDispatchDataCodec.of(DATA_CODEC);
+
+        public WorleyDensityFunction(double xz_size,double y_size,double scale_factor){
+            noise = new WorleyNoise(xz_size,y_size,scale_factor);
         }
 
-        private static float getHeightValue(SimplexNoise simplexNoise, int x, int y) {
-            int i = x / 2;
-            int j = y / 2;
-            int k = x % 2;
-            int l = y % 2;
-            float f = 100.0F - Mth.sqrt((float)(x * x + y * y)) * 8.0F;
-            f = Mth.clamp(f, -100.0F, 80.0F);
-
-            for(int i1 = -12; i1 <= 12; ++i1) {
-                for(int j1 = -12; j1 <= 12; ++j1) {
-                    long k1 = (long)(i + i1);
-                    long l1 = (long)(j + j1);
-                    if (simplexNoise.getValue((double)k1, (double)l1) < (double)-0.9F) {
-                        float f1 = (Mth.abs((float)k1) * 3439.0F + Mth.abs((float)l1) * 147.0F) % 13.0F + 9.0F;
-                        float f2 = (float)(k - i1 * 2);
-                        float f3 = (float)(l - j1 * 2);
-                        float f4 = 100.0F - Mth.sqrt(f2 * f2 + f3 * f3) * f1;
-                        f4 = Mth.clamp(f4, -100.0F, 80.0F);
-                        f = f4;//Math.max(f, f4);
-                    }
-                }
-            }
-
-            return f;
+        @Override
+        public double compute(@NotNull FunctionContext context) {
+            return noise.getValue(context.blockX(),context.blockY(),context.blockZ());
         }
 
-
-        public double compute(DensityFunction.FunctionContext context) {
-            return ((double)getHeightValue(this.islandNoise, context.blockX() / 8, context.blockZ() / 8) - 8.0D) / 128.0D;
-        }
-
+        @Override
         public double minValue() {
-            return -0.84375D;
+            return -1;
         }
 
+        @Override
         public double maxValue() {
-            return 0.5625D;
+            return 1;
         }
 
-        public KeyDispatchDataCodec<? extends DensityFunction> codec() {
+        @Override
+        public @NotNull KeyDispatchDataCodec<? extends DensityFunction> codec() {
             return CODEC;
         }
     }

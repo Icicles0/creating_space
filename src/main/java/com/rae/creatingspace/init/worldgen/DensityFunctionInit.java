@@ -12,8 +12,8 @@ import net.minecraftforge.registries.RegistryObject;
 public class DensityFunctionInit {
     private static final DeferredRegister<Codec<? extends DensityFunction>> DENSITY_FUNCTIONS = DeferredRegister.create(Registry.DENSITY_FUNCTION_TYPE_REGISTRY, CreatingSpace.MODID);
 
-    public static final RegistryObject<Codec<CustomDensityFunctions.AsteroidNoise>> ASTEROID_FUNCTION = DENSITY_FUNCTIONS
-            .register("asteroids", CustomDensityFunctions.AsteroidNoise.CODEC::codec);
+    public static final RegistryObject<Codec<CustomDensityFunctions.WorleyDensityFunction>> WORLEY_NOISE_FUNCTION = DENSITY_FUNCTIONS
+            .register("worley_noise", CustomDensityFunctions.WorleyDensityFunction.CODEC::codec);
 
     public static void register(IEventBus bus){
         DENSITY_FUNCTIONS.register(bus);

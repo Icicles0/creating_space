@@ -7,7 +7,7 @@
     "Name": "minecraft:air"
   },
   "disable_mob_generation": true,
-  "legacy_random_source": true,
+  "legacy_random_source": false,
   "noise": {
     "height": 384,
     "min_y": -48,
@@ -19,21 +19,7 @@
     "continents": 0,
     "depth": 0,
     "erosion": 0,
-    "final_density": {
-      "type": "minecraft:clamp",
-      "input": {
-        "type": "minecraft:add",
-        "argument1": {
-          "type": "minecraft:noise",
-          "noise": "creatingspace:asteroid/test",
-          "xz_scale": 1,
-          "y_scale": 1
-        },
-        "argument2": -0.8
-      },
-      "min": 0,
-      "max": 1
-    },
+    "final_density": "creatingspace:asteroids/sloped_cheese",
     "fluid_level_floodedness": 0,
     "fluid_level_spread": 0,
     "initial_density_without_jaggedness": 0,
