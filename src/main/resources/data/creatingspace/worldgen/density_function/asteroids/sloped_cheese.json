@@ -3,11 +3,7 @@
   "argument1": {
     "type": "minecraft:mul",
     "argument1": 2,
-    "argument2": {
-      "type": "minecraft:max",
-      "argument1": "creatingspace:asteroids/density_fw",
-      "argument2": "creatingspace:asteroids/density"
-    }
+    "argument2":"creatingspace:asteroids/density"
   },
   "argument2": {
     "type": "minecraft:add",
