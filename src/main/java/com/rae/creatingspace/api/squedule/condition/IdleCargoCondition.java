@@ -2,7 +2,7 @@ package com.rae.creatingspace.api.squedule.condition;
 
 import com.rae.creatingspace.CreatingSpace;
 import com.rae.creatingspace.content.rocket.RocketContraptionEntity;
-import com.simibubi.create.Create;
+import com.rae.creatingspace.content.rocket.contraption.RocketContraption;
 import com.simibubi.create.foundation.utility.Lang;
 import com.simibubi.create.foundation.utility.Pair;
 import net.minecraft.nbt.CompoundTag;
@@ -24,13 +24,11 @@ public class IdleCargoCondition extends TimedWaitCondition {
     }
 
     @Override
-    public boolean tickCompletion(Level level, RocketContraptionEntity train, CompoundTag context) {
-    /*    int idleTime = Integer.MAX_VALUE;
-            idleTime = Math.min(idleTime, train.getContraption().getSharedFuelInventory().getTicksSinceLastExchange());
+    public boolean tickCompletion(Level level, RocketContraptionEntity rocket, CompoundTag context) {
+        int idleTime = Integer.MAX_VALUE;
+            idleTime = Math.min(idleTime, ((RocketContraption)rocket.getContraption()).getStorage().getTicksSinceLastExchange());
         context.putInt("Time", idleTime);
         requestDisplayIfNecessary(context, idleTime);
-        return idleTime > totalWaitTicks();*/
-        return false;
+        return idleTime > totalWaitTicks();
     }
-
 }

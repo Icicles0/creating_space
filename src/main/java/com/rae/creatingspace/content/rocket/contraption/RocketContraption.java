@@ -34,12 +34,15 @@ import java.util.*;
 public class RocketContraption extends TranslatingContraption {
     private int thrust = 0;
     private int dryMass = 0;
-    //private final HashMap<Couple<TagKey<Fluid>>, ConsumptionInfo> theoreticalPerTagFluidConsumption = new HashMap<>();
+    public static final Codec<Map<PropellantType, ConsumptionInfo>> CODEC = Codec.unboundedMap(PropellantType.DIRECT_CODEC,ConsumptionInfo.CODEC);
     private HashMap<PropellantType, ConsumptionInfo> theoreticalPerTagFluidConsumption = new HashMap<>();
 
     private final ArrayList<BlockPos> localPosOfFlightRecorders = new ArrayList<>();
     public RocketContraption() {
-
+        storage = new RocketStorageManager();
+    }
+    public RocketStorageManager getStorage(){
+        return (RocketStorageManager) storage;
     }
     @Override
     public boolean assemble(Level level, BlockPos pos) throws AssemblyException {
@@ -104,7 +107,6 @@ public class RocketContraption extends TranslatingContraption {
     public ContraptionType getType() {
         return CSContraptionType.ROCKET;
     }
-    public static final Codec<Map<PropellantType, ConsumptionInfo>> CODEC = Codec.unboundedMap(PropellantType.DIRECT_CODEC,ConsumptionInfo.CODEC);
     @Override
     public void readNBT(Level world, CompoundTag nbt, boolean spawnData) {
 
@@ -136,19 +138,6 @@ public class RocketContraption extends TranslatingContraption {
         }
         return nbt;
     }
-    /*@Override
-    public void addBlocksToWorld(Level world, StructureTransform transform) {
-        for (StructureTemplate.StructureBlockInfo block : blocks.values()){
-            BlockPos targetPos = transform.apply(block.pos);
-            BlockState worldState = world.getBlockState(targetPos);
-
-            if (!worldState.isAir()){
-                worldState.getBlock().canBeReplaced(worldState, Fluids.WATER.defaultFluidState().getType());
-                world.explode()
-            }
-        }
-        super.addBlocksToWorld(world, transform);
-    }*/
 
     @Override
     @OnlyIn(Dist.CLIENT)

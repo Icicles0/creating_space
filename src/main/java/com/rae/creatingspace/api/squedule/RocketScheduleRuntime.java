@@ -4,8 +4,9 @@ import com.rae.creatingspace.api.squedule.condition.ScheduleWaitCondition;
 import com.rae.creatingspace.api.squedule.destination.ChangeTitleInstruction;
 import com.rae.creatingspace.api.squedule.destination.DestinationInstruction;
 import com.rae.creatingspace.api.squedule.destination.ScheduleInstruction;
-import com.rae.creatingspace.content.rocket.RocketContraptionEntity;
 import com.rae.creatingspace.content.planets.CSDimensionUtil;
+import com.rae.creatingspace.content.rocket.RocketContraptionEntity;
+import com.rae.creatingspace.content.rocket.contraption.RocketContraption;
 import com.simibubi.create.foundation.utility.Components;
 import com.simibubi.create.foundation.utility.NBTHelper;
 import net.minecraft.nbt.CompoundTag;
@@ -176,6 +177,9 @@ public class RocketScheduleRuntime {
             }
 
             displayLinkUpdateRequested |= i == 0 && prevVersion != tag.getInt("StatusVersion");
+        }
+        if (rocket.getContraption() instanceof RocketContraption rc && rc.getStorage() != null){
+            rc.getStorage().tickIdleCargoTracker();
         }
     }
 

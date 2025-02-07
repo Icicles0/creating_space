@@ -40,9 +40,7 @@
   },
   "spawn_costs": {},
   "carvers": {
-    "air": [
-      "creatingspace:moon_crater"
-  ]},
+    "air": []},
   "features": [
     [
       "creatingspace:moon_aluminum_ore",

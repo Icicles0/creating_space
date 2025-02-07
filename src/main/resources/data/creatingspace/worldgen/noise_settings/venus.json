@@ -27,7 +27,7 @@
     "temperature": "creatingspace:venus/volcanism",
     "vegetation": "creatingspace:venus/toxicity",
     "continents": "creatingspace:venus/volcanism",
-    "erosion": 0,
+    "erosion": "creatingspace:venus/volcano",
     "depth": 0,
     "ridges": 0,
     "initial_density_without_jaggedness": {

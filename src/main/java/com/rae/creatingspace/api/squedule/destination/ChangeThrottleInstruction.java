@@ -1,8 +1,8 @@
 package com.rae.creatingspace.api.squedule.destination;
 
 import com.google.common.collect.ImmutableList;
+import com.rae.creatingspace.CreatingSpace;
 import com.simibubi.create.AllBlocks;
-import com.simibubi.create.Create;
 import com.simibubi.create.foundation.gui.ModularGuiLineBuilder;
 import com.simibubi.create.foundation.utility.Components;
 import com.simibubi.create.foundation.utility.Lang;
@@ -35,7 +35,7 @@ public class ChangeThrottleInstruction extends ScheduleInstruction {
 
     @Override
     public ResourceLocation getId() {
-        return Create.asResource("throttle");
+        return CreatingSpace.resource("throttle");
     }
 
     @Override

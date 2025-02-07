@@ -1,8 +1,8 @@
 package com.rae.creatingspace.api.squedule.condition;
 
 import com.google.common.collect.ImmutableList;
+import com.rae.creatingspace.CreatingSpace;
 import com.rae.creatingspace.content.rocket.RocketContraptionEntity;
-import com.simibubi.create.Create;
 import com.simibubi.create.content.logistics.filter.FilterItemStack;
 import com.simibubi.create.foundation.gui.ModularGuiLineBuilder;
 import com.simibubi.create.foundation.utility.Components;
@@ -104,7 +104,7 @@ public class FluidThresholdCondition extends CargoThresholdCondition {
 
     @Override
     public ResourceLocation getId() {
-        return Create.asResource("fluid_threshold");
+        return CreatingSpace.resource("fluid_threshold");
     }
 
     @Override

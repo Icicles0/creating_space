@@ -2,7 +2,7 @@
   "type": "minecraft:add",
   "argument1": {
     "type": "minecraft:mul",
-    "argument1": 2,
+    "argument1": 10,
     "argument2":"creatingspace:asteroids/density"
   },
   "argument2": {

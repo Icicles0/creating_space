@@ -114,6 +114,7 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
     public RocketContraptionEntity(EntityType<?> type, Level level) {
         super(type, level);
         schedule = new RocketScheduleRuntime(this);
+
     }
 
     public static RocketContraptionEntity create(Level level, RocketContraption contraption) {
@@ -872,7 +873,6 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
     }
 
     public enum RocketStatus {
-        //replacement for the RUNNING_ENTITY_DATA_ACCESSOR and REENTRY_ENTITY_DATA_ACCESSOR
         IDLE(false),
         TRAVELING(true),//going up to the next dimension
         BLOCKED(false),//used when physically blocked and when not enough fuel, -> separate into several cases ?

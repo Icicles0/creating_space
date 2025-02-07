@@ -1,6 +1,7 @@
 package com.rae.creatingspace.api.squedule.condition;
 
 import com.google.common.collect.ImmutableList;
+import com.rae.creatingspace.CreatingSpace;
 import com.rae.creatingspace.content.rocket.RocketContraptionEntity;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.Create;
@@ -91,7 +92,7 @@ public class RedstoneLinkCondition extends ScheduleWaitCondition {
 
     @Override
     public ResourceLocation getId() {
-        return Create.asResource("redstone_link");
+        return CreatingSpace.resource("redstone_link");
     }
 
     @Override
