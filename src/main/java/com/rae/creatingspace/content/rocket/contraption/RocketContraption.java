@@ -52,6 +52,7 @@ public class RocketContraption extends TranslatingContraption {
         }
         startMoving(level);
         expandBoundsAroundAxis(Direction.Axis.Y);
+        getStorage().onContraptionAssemble(this);
         return true;
     }
 

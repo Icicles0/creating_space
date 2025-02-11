@@ -6,6 +6,7 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
@@ -25,33 +26,45 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class EngineItem extends RocketEngineItem {
-    public EngineItem(Block p_40565_, Properties p_40566_) {
-        super(p_40565_, p_40566_);
+    public EngineItem(Block block, Properties properties) {
+        super(block, properties);
     }
 
     @Override
     protected boolean canPlace(BlockPlaceContext pContext, BlockState pState) {
-        SuperEngineBlock main = (SuperEngineBlock) getBlock();
+        RocketEngineBlock main = (RocketEngineBlock) getBlock();
         Level lvl = pContext.getLevel();
         Direction facing = pContext.getClickedFace();
-        BlockPos mainPos = pContext.getClickedPos().offset(main.getPlaceOffset(facing));
-
-        return lvl.getBlockState(mainPos).isAir() && lvl.getBlockState(mainPos.below()).isAir();
+        Vec3i offset = main.getPlaceOffset(facing);
+        BlockPos mainPos = pContext.getClickedPos().offset(offset);
+        boolean flag = true;
+        Vec3i size = main.getSize(facing);
+        for (int x = -offset.getX(); x < size.getX() - offset.getX();x++){
+            for (int y = -offset.getY(); y < size.getY() - offset.getY();y++){
+                for (int z = -offset.getZ(); z < size.getZ() - offset.getZ();z++){
+                    if (!lvl.getBlockState(mainPos.offset(x,y,z)).isAir()){
+                        flag = false;
+                        break;
+                    }
+                }
+                if (!flag){
+                    break;
+                }
+            }
+            if (!flag){
+                break;
+            }
+        }
+        return true;
     }
 
     @Override
     protected boolean placeBlock(BlockPlaceContext pContext, BlockState pState) {
-        SuperEngineBlock main = (SuperEngineBlock) getBlock();
+        RocketEngineBlock main = (RocketEngineBlock) getBlock();
         Level lvl = pContext.getLevel();
         Direction facing = pContext.getClickedFace();
         BlockPos mainPos = pContext.getClickedPos().offset(main.getPlaceOffset(facing));
-
-        /*BlockState ghostState = BlockInit.ENGINE_STRUCTURAL.getDefaultState()
-                .setValue(SmallRocketStructuralBlock.FACING, Direction.UP);
-        lvl.setBlock(mainPos.below(), ghostState, 11);*/
-        lvl.setBlock(mainPos, pState, 11);
-        lvl.scheduleTick(mainPos,main,11);
-
+        lvl.setBlockAndUpdate(mainPos, main.getStateForPlacement(pContext));
 
         Player player = pContext.getPlayer();
         ItemStack itemstack = pContext.getItemInHand();

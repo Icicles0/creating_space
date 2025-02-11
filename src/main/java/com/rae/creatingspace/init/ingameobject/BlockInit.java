@@ -24,7 +24,7 @@ import com.rae.creatingspace.legacy.server.blocks.atmosphere.OxygenBlock;
 import com.rae.creatingspace.legacy.server.blocks.atmosphere.SealerBlock;
 import com.rae.creatingspace.legacy.server.blocks.multiblock.engines.BigEngineBlock;
 import com.rae.creatingspace.legacy.server.blocks.multiblock.engines.SmallEngineBlock;
-import com.rae.creatingspace.content.rocket.engine.SuperEngineBlock;
+import com.rae.creatingspace.content.rocket.engine.RocketEngineBlock;
 import com.rae.creatingspace.legacy.server.blocks.multiblock.BigRocketStructuralBlock;
 import com.rae.creatingspace.legacy.server.blocks.multiblock.SmallRocketStructuralBlock;
 import com.rae.creatingspace.legacy.server.items.BigEngineItem;
@@ -41,7 +41,6 @@ import com.simibubi.create.content.kinetics.BlockStressDefaults;
 import com.simibubi.create.content.processing.AssemblyOperatorBlockItem;
 import com.simibubi.create.foundation.data.*;
 import com.simibubi.create.foundation.item.ItemDescription;
-import com.simibubi.create.foundation.utility.Couple;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import net.minecraft.core.Registry;
 import net.minecraft.tags.BlockTags;
@@ -111,8 +110,8 @@ public class BlockInit {
                     .properties(BlockBehaviour.Properties::noOcclusion)
                     .transform(axeOrPickaxe())
                     .register();
-    public static final BlockEntry<SuperEngineBlock> ROCKET_ENGINE = REGISTRATE
-            .block("rocket_engine", p -> new SuperEngineBlock(p, ENGINE_STRUCTURAL.get()))
+    public static final BlockEntry<RocketEngineBlock> ROCKET_ENGINE = REGISTRATE
+            .block("rocket_engine", p -> new RocketEngineBlock(p, ENGINE_STRUCTURAL.get()))
             //.initialProperties(SharedProperties::copperMetal)
             .properties(p -> p.strength(1.0f).dynamicShape().noOcclusion())
 

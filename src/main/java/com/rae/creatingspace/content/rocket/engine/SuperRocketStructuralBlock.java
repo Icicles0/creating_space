@@ -155,7 +155,7 @@ public class SuperRocketStructuralBlock extends DirectionalBlock implements IWre
         BlockPos targetedPos = pos.relative(direction);
         BlockState targetedState = level.getBlockState(targetedPos);
         return targetedState.getBlock() instanceof SuperRocketStructuralBlock ||
-                targetedState.getBlock() instanceof SuperEngineBlock;
+                targetedState.getBlock() instanceof RocketEngineBlock;
     }
 
     @Override

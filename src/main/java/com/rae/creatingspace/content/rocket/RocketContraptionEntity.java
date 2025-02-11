@@ -95,13 +95,13 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
             TagKey.codec(Registry.FLUID_REGISTRY),
             Codec.FLOAT
     ).xmap(HashMap::new, i -> i);
-    public float totalThrust = 0;
+    public float totalThrust = 0;//maybe always use the value of the contraption
     public float initialMass;
     private List<BlockPos> localPosOfFlightRecorders;//will be transferred to the rocket controls, or it's equivalent
     public FlightDataHelper.RocketAssemblyData assemblyData;//this is shit, we need the freaking inventory manager
 
     //TODO make a record and CODEC
-    public HashMap<TagKey<Fluid>, ArrayList<Fluid>> consumableFluids = new HashMap<>();//
+    public HashMap<TagKey<Fluid>, ArrayList<Fluid>> consumableFluids = new HashMap<>();//should be inside RocketStorageManager
     public RocketScheduleRuntime schedule;
     public static final EntityDataAccessor<RocketStatus> STATUS_DATA_ACCESSOR =
             SynchedEntityData.defineId(RocketContraptionEntity.class, EntityDataSerializersInit.STATUS_SERIALIZER);
@@ -145,35 +145,32 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
         if (CSConfigs.COMMON.additionalLogInfo.get()){
             CreatingSpace.LOGGER.info("-------------------trajectory calculation---------------------");
         }
+        if (CSConfigs.COMMON.additionalLogInfo.get()){
+            CreatingSpace.LOGGER.info("initial delta V prevision" + contraption.getStorage().getCurrentDeltaV());
+
+        }
 
         if (contraption==null){
             CreatingSpace.LOGGER.warn("no contraption, aborting calculation");
             return;
         }
-        float totalThrust =0;
-        float totalFluidMass= 0;
-        IFluidHandler fluidHandler = contraption.getSharedFluidTanks();
-        int nbrOfTank = fluidHandler.getTanks();
+
         //both research of every consumable fluid and addition of the total consumption
-        float totalTheoreticalConsumption = 0;
+
         //TODO that could be in the inventory manager of the rocket -> 1.8
+        //hmmmm, maybe do that elsewhere ?
+        float totalThrust =rocketContraptionEntity.totalThrust;
         for (PropellantType combination : rocketContraptionEntity.theoreticalPerTagFluidConsumption.keySet()) {
-            RocketContraption.ConsumptionInfo info = rocketContraptionEntity.theoreticalPerTagFluidConsumption.get(combination);
-            //mean speed of ejected gasses for the fluid -> need to be done for a couple of tag -> ox/fuel
-            for (float consumption :
-                    info.propellantConsumption().values()) {
-                totalTheoreticalConsumption += consumption;
-            }
-            totalThrust += info.partialThrust();
             //initialise if not present
             for (TagKey<Fluid> fluid :
                     combination.getPropellantRatio().keySet()) {
-                addToConsumableFluids(rocketContraptionEntity, fluid);
+                searchForFluid(rocketContraptionEntity, fluid);
             }
         }
 
-        float meanVe = totalThrust/totalTheoreticalConsumption;
 
+        float meanVe = ((RocketContraption) rocketContraptionEntity.contraption).getStorage().getMeanVe();
+        float totalTheoreticalConsumption = totalThrust / meanVe;
         if (CSConfigs.COMMON.additionalLogInfo.get()){
             CreatingSpace.LOGGER.info("finished propellants loading pass, result :");
             CreatingSpace.LOGGER.info("thrust : " + totalThrust+ "N");
@@ -184,30 +181,15 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
 
         // massForEachPropellant is just to determine if there is enough fluid,
         // need to be called after the consumedFluids map is build
-        HashMap<TagKey<Fluid>,Integer> massForEachPropellant =
-                getMassMap(rocketContraptionEntity);
+        HashMap<TagKey<Fluid>,Integer> massForEachPropellant = getMassMap(rocketContraptionEntity);
+        float initialPropellantMass = contraption.getStorage().getPropellantMass();
 
-        for (int i=0 ; i < nbrOfTank; i++) {
-            FluidStack fluidInTank = fluidHandler.getFluidInTank(i);
-            FluidType fluidType = fluidInTank.getFluid().getFluidType();
-                totalFluidMass += (float) (fluidInTank.getAmount() * fluidType.getDensity()) /1000;
-        }
-        float initialPropellantMass = 0;
-        for (int mass : massForEachPropellant.values()){
-            initialPropellantMass+=mass;
-        }
-        float emptyMass = totalFluidMass - initialPropellantMass + contraption.getDryMass();
+        float emptyMass = contraption.getStorage().getInertFluidMass() + contraption.getDryMass();
         if (CSConfigs.COMMON.additionalLogInfo.get()) {
             CreatingSpace.LOGGER.info("finished mass pass, result:");
-            CreatingSpace.LOGGER.info("found mass for fluids " + massForEachPropellant);
             CreatingSpace.LOGGER.info("total initial mass for propellants " + initialPropellantMass+"Kg");
-            CreatingSpace.LOGGER.info("inert mass "+ emptyMass + " Kg (inert fluid "+(totalFluidMass - initialPropellantMass )+ "| dry mass"+ contraption.getDryMass()+ ")");
+            CreatingSpace.LOGGER.info("inert mass "+ emptyMass + " Kg (inert fluid "+(contraption.getStorage().getInertFluidMass())+ "| dry mass"+ contraption.getDryMass()+ ")");
         }
-        // to comment -> may need to calculate the deltaV of the rocket rather than
-        // the amount of propellant consumed as the user will have that info
-        // need testing -> can it be negative ?
-        // yes if there isn't enough propellant
-        // each propellant is making a contribution, so it should appear here : need to write done the math...
 
         float finalPropellantMass = (float) ((emptyMass+initialPropellantMass)/Math.exp(deltaVNeeded/meanVe)-emptyMass);
 
@@ -216,7 +198,7 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
             CreatingSpace.LOGGER.info("estimated propellant consumption : "+ consumedPropellantMass+ " Kg");
         }
 
-        rocketContraptionEntity.initialMass = emptyMass+initialPropellantMass;
+        rocketContraptionEntity.initialMass = emptyMass+initialPropellantMass ;
 
         int distance = (int) (300 - rocketContraptionEntity.position().y());
 
@@ -233,33 +215,17 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
         }
         //fill the real consumption map and fill the consumedMass map for mass verification
         HashMap<TagKey<Fluid>,Integer> consumedMassForEachPropellant = new HashMap<>();//just to determine if there is enough fluid
-
+        float realPartialConsumption = consumedPropellantMass/totalTheoreticalConsumption;
         for (PropellantType propellantType : rocketContraptionEntity.theoreticalPerTagFluidConsumption.keySet()) {
             RocketContraption.ConsumptionInfo info = rocketContraptionEntity.theoreticalPerTagFluidConsumption.get(propellantType);
-
-            float theoreticalPartialConsumption = 0;
-            for (float consumption :
-                    info.propellantConsumption().values()) {
-                theoreticalPartialConsumption += consumption;
-            }
-
-            float ponderationCoef = theoreticalPartialConsumption/totalTheoreticalConsumption;
-            float realPartialConsumption = ponderationCoef*consumedPropellantMass;
             //that's the consumed mass for the ensemble of engine with the same propellant combination
             HashMap<TagKey<Fluid>, Float> correctedConsumptions = new HashMap<>(info.propellantConsumption());
-            RocketContraption.multiplyMap(correctedConsumptions, realPartialConsumption / theoreticalPartialConsumption / totalTickTime);
+            RocketContraption.multiplyMap(correctedConsumptions, realPartialConsumption / totalTickTime);
 
-            rocketContraptionEntity.realPerTagFluidConsumption.put(propellantType,
-                    new RocketContraption.ConsumptionInfo(
-                            correctedConsumptions,
-                            info.partialThrust()));
-            for (TagKey<Fluid> fluid :
-                    correctedConsumptions.keySet()) {
-                Integer prevValue = consumedMassForEachPropellant.getOrDefault(fluid, 0);
-                consumedMassForEachPropellant.put(fluid, (int) (prevValue + correctedConsumptions.get(fluid)));
-
-            }
-
+            rocketContraptionEntity.realPerTagFluidConsumption.put(propellantType, new RocketContraption.ConsumptionInfo( correctedConsumptions,info.partialThrust()));
+            correctedConsumptions.keySet().forEach(
+                            fluid -> consumedMassForEachPropellant.put(fluid,
+                                    (int) (consumedMassForEachPropellant.getOrDefault(fluid, 0) + correctedConsumptions.get(fluid))));
         }
 
         if (CSConfigs.COMMON.additionalLogInfo.get()) {
@@ -311,7 +277,7 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
             //initialise if not present
             for (TagKey<Fluid> fluid :
                     combination.getPropellantRatio().keySet()) {
-                addToConsumableFluids(this, fluid);
+                searchForFluid(this, fluid);
             }
         }
 
@@ -335,16 +301,16 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
         float emptyMass = inertFluidsMass + ((RocketContraption) contraption).getDryMass();
         return (float) (meanVe * Math.log((emptyMass + initialPropellantMass) / (emptyMass)));
     }
-    private static void addToConsumableFluids(RocketContraptionEntity rocketContraptionEntity, TagKey<Fluid> consumedFluid) {
-        rocketContraptionEntity.consumableFluids.put(consumedFluid, new ArrayList<>());
+    private static void searchForFluid(RocketContraptionEntity rocketContraptionEntity, TagKey<Fluid> tag) {
+        rocketContraptionEntity.consumableFluids.put(tag, new ArrayList<>());
         IFluidHandler fluidHandler = rocketContraptionEntity.contraption.getSharedFluidTanks();
         int nbrOfTank = fluidHandler.getTanks();
 
         for (int i = 0; i < nbrOfTank; i++) {
             FluidStack fluidInTank = fluidHandler.getFluidInTank(i);
-            if (fluidInTank.getFluid().is(consumedFluid)) {
-                if (!rocketContraptionEntity.consumableFluids.get(consumedFluid).contains(fluidInTank.getFluid())) {
-                    rocketContraptionEntity.consumableFluids.get(consumedFluid).add(fluidInTank.getFluid());
+            if (fluidInTank.getFluid().is(tag)) {
+                if (!rocketContraptionEntity.consumableFluids.get(tag).contains(fluidInTank.getFluid())) {
+                    rocketContraptionEntity.consumableFluids.get(tag).add(fluidInTank.getFluid());
                 }
             }
         }
@@ -590,7 +556,7 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
                     //int consumedFuel = fluidHandler.drain(new FluidStack(fuelFluid, (int) fuelAmount), IFluidHandler.FluidAction.EXECUTE).getAmount();//drain fuel
 
                     if (consumedOx == 0) {
-                        RocketContraptionEntity.addToConsumableFluids(this, fluidTag);
+                        RocketContraptionEntity.searchForFluid(this, fluidTag);
                         //RocketContraptionEntity.addToConsumableFluids(this, combination.get(false), false);
 
                     }
@@ -796,7 +762,7 @@ public class RocketContraptionEntity extends AbstractContraptionEntity {
         for (PropellantType combination : realPerTagFluidConsumption.keySet()) {
             for (TagKey<Fluid> fluid :
                     combination.getPropellantRatio().keySet()) {
-                RocketContraptionEntity.addToConsumableFluids(this, fluid);
+                RocketContraptionEntity.searchForFluid(this, fluid);
 
             }
         }

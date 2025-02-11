@@ -1,6 +1,7 @@
 package com.rae.creatingspace.api.squedule.condition;
 
 import com.google.common.collect.ImmutableList;
+import com.rae.creatingspace.CreatingSpace;
 import com.rae.creatingspace.content.rocket.RocketContraptionEntity;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.Create;
@@ -33,7 +34,7 @@ public class PlayerPassengerCondition extends ScheduleWaitCondition {
 
     @Override
     public ResourceLocation getId() {
-        return Create.asResource("player_count");
+        return CreatingSpace.resource("player_count");
     }
 
     public int getTarget() {
@@ -68,9 +69,9 @@ public class PlayerPassengerCondition extends ScheduleWaitCondition {
     }
 
     @Override
-    public boolean tickCompletion(Level level, RocketContraptionEntity train, CompoundTag context) {
+    public boolean tickCompletion(Level level, RocketContraptionEntity rocket, CompoundTag context) {
         int prev = context.getInt("PrevPlayerCount");
-        int present = train.countPlayerPassengers();
+        int present = rocket.countPlayerPassengers();
         int target = getTarget();
         context.putInt("PrevPlayerCount", present);
         if (prev != present)
