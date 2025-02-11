@@ -78,7 +78,6 @@ public class RocketStorageManager extends MountedStorageManager {
             onFilled(fluidInTank);
         }
         calculateVe();
-        currentDeltaV = (float) (meanVe * Math.log((dryMass+propellantMass)/(dryMass+propellantMass+inertFluidMass)));
     }
 
     @Override
@@ -244,6 +243,5 @@ public class RocketStorageManager extends MountedStorageManager {
         }
         meanVe = totalThrust/totalTheoreticalConsumption;
         currentDeltaV = (float) (meanVe * Math.log((dryMass+propellantMass)/(dryMass+propellantMass+inertFluidMass)));
-
     }
 }

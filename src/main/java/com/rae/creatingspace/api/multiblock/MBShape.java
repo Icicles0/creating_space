@@ -14,24 +14,25 @@ import java.util.List;
 import java.util.Map;
 
 public class MBShape {
-    public static MBShape make3x1(DirectionalBlock structure){
+    //make functions for every sizes
+    public static MBShape make3x1x1(DirectionalBlock structure){
         return new MBShape(structure, new Vec3i(3, 1,1), new Vec3i(1,0,0),
                 new HashMap<>(Map.of(
                         Direction.UP, List.of(List.of(List.of(Direction.UP),List.of(),List.of(Direction.DOWN))),
                         Direction.DOWN, List.of(List.of(List.of(Direction.DOWN),List.of(),List.of(Direction.UP))),
-                        Direction.WEST, List.of(List.of(List.of(Direction.WEST)),List.of(List.of()),List.of(List.of(Direction.EAST))),//those 4 are wrong... the joy of 3d lists
-                        Direction.EAST, List.of(List.of(List.of(Direction.EAST)),List.of(List.of()),List.of(List.of(Direction.WEST))),
+                        Direction.WEST, List.of(List.of(List.of(Direction.WEST)),List.of(),List.of(List.of(Direction.EAST))),
+                        Direction.EAST, List.of(List.of(List.of(Direction.EAST)),List.of(),List.of(List.of(Direction.WEST))),
                         Direction.NORTH, List.of(List.of(List.of(Direction.NORTH,Direction.SOUTH))),
                         Direction.SOUTH, List.of(List.of(List.of(Direction.SOUTH,Direction.NORTH)))
                 )
                 ));
     }
-    public static MBShape make2x1(DirectionalBlock structure){
+    public static MBShape make2x1x1(DirectionalBlock structure){
         return new MBShape(structure, new Vec3i(2, 1,1), new Vec3i(1,0,0),
                 new HashMap<>(Map.of(
                         Direction.UP, List.of(List.of(List.of(Direction.UP))),
                         Direction.DOWN, List.of(List.of(List.of(Direction.DOWN))),
-                        Direction.WEST, List.of(List.of(List.of(Direction.WEST))),//those 4 are wrong... the joy of 3d lists
+                        Direction.WEST, List.of(List.of(List.of(Direction.WEST))),
                         Direction.EAST, List.of(List.of(List.of(Direction.EAST))),
                         Direction.NORTH, List.of(List.of(List.of(Direction.NORTH))),
                         Direction.SOUTH, List.of(List.of(List.of(Direction.SOUTH))))
@@ -95,7 +96,7 @@ public class MBShape {
                                                 negative?-y:y,
                                                 negative?-z:z),
 
-                                        Blocks.DISPENSER.defaultBlockState().setValue(DirectionalBlock.FACING, shape.get(x + off.getX()).get(y + off.getY()).get(z + off.getZ()))
+                                        structure.defaultBlockState().setValue(DirectionalBlock.FACING, shape.get(x + off.getX()).get(y + off.getY()).get(z + off.getZ()))
                                 );
                             }
                         }

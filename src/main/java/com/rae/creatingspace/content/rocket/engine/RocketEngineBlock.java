@@ -6,11 +6,7 @@ import com.rae.creatingspace.init.ingameobject.BlockEntityInit;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.utility.Lang;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
@@ -23,9 +19,7 @@ import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -46,13 +40,13 @@ public class RocketEngineBlock extends MBController implements IBE<RocketEngineB
 
     @Override
     protected MBShape makeShapes(DirectionalBlock structure) {
-        return MBShape.make3x1(structure);
+        return MBShape.make2x1x1(structure);
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.@NotNull Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
-        builder.add(EXHAUST_PACK).add(POWER_PACK).add(ACTIVE).add(FACING);
+        builder.add(EXHAUST_PACK).add(POWER_PACK).add(ACTIVE);
     }
     @Override
     public BlockState getStateForPlacement(@NotNull BlockPlaceContext context) {
@@ -104,8 +98,6 @@ public class RocketEngineBlock extends MBController implements IBE<RocketEngineB
         super.onRemove(blockState, level, blockPos, newBlockState, isMoving);
         IBE.onRemove(blockState, level, blockPos, newBlockState);
     }
-
-
 
     public enum Power implements StringRepresentable {
         STANDARD,MAGNETIC;
