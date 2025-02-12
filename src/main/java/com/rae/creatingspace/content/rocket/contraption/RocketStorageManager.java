@@ -32,9 +32,13 @@ public class RocketStorageManager extends MountedStorageManager {
     float propellantMass;
     float meanVe;
 
+    /**
+     * called just after the contraption is search and validated for assembly, before the inventory is wrapped
+     */
     public void onContraptionAssemble(RocketContraption rocketContraption) {
         this.theoreticalPerTagFluidConsumption = rocketContraption.getTPTFluidConsumption();
         this.theoreticalPerTagFluidConsumption.keySet().forEach( p -> listOfPropellantFluid.addAll(p.getPropellantRatio().keySet()));
+        dryMass = rocketContraption.getDryMass();
 
     }
     public float getCurrentDeltaV() {
@@ -66,6 +70,9 @@ public class RocketStorageManager extends MountedStorageManager {
     protected CombinedTankWrapper wrapFluids(Collection<IFluidHandler> list) {
         return new CargoTankWrapper(Arrays.copyOf(list.toArray(), list.size(), IFluidHandler[].class));
     }
+    /**
+     * called after onContraptionAssemble
+    */
     @Override
     public void createHandlers() {
         super.createHandlers();
@@ -187,8 +194,10 @@ public class RocketStorageManager extends MountedStorageManager {
         @Override
         public FluidStack drain(FluidStack resource, FluidAction action) {
             FluidStack drained = super.drain(resource, action);
-            if (action.execute() && !drained.isEmpty())
+            if (action.execute() && !drained.isEmpty()) {
+                onDrained(drained);
                 changeDetected();
+            }
             return drained;
         }
 
@@ -242,6 +251,7 @@ public class RocketStorageManager extends MountedStorageManager {
             totalThrust += info.partialThrust();
         }
         meanVe = totalThrust/totalTheoreticalConsumption;
-        currentDeltaV = (float) (meanVe * Math.log((dryMass+propellantMass)/(dryMass+propellantMass+inertFluidMass)));
+        currentDeltaV = (float) (meanVe * Math.log((dryMass+propellantMass+inertFluidMass)/(dryMass+inertFluidMass)));
+        System.out.println("deltaV : "+currentDeltaV);
     }
 }

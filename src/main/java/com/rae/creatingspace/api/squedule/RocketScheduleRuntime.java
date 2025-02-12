@@ -1,9 +1,10 @@
 package com.rae.creatingspace.api.squedule;
 
+import com.rae.creatingspace.CreatingSpace;
 import com.rae.creatingspace.api.squedule.condition.ScheduleWaitCondition;
-import com.rae.creatingspace.api.squedule.destination.ChangeTitleInstruction;
-import com.rae.creatingspace.api.squedule.destination.DestinationInstruction;
-import com.rae.creatingspace.api.squedule.destination.ScheduleInstruction;
+import com.rae.creatingspace.api.squedule.instruction.ChangeTitleInstruction;
+import com.rae.creatingspace.api.squedule.instruction.DestinationInstruction;
+import com.rae.creatingspace.api.squedule.instruction.ScheduleInstruction;
 import com.rae.creatingspace.content.planets.CSDimensionUtil;
 import com.rae.creatingspace.content.rocket.RocketContraptionEntity;
 import com.rae.creatingspace.content.rocket.contraption.RocketContraption;
@@ -22,6 +23,8 @@ import java.util.List;
 public class RocketScheduleRuntime {
     //TODO remove anything unnecessary : item + graph stuff + train stuff
     // tick methode should be fine
+
+    //TODO the schedule should be paused by default. See the GUI
     private static final int TBD = -1;
     private static final int INVALID = -2;
 
@@ -127,7 +130,6 @@ public class RocketScheduleRuntime {
             return;
         //seems like conditions aren't ticked properly
         if (state == State.POST_TRANSIT) {
-            System.out.println("tick condition");
             tickConditions(level);
             return;
         }
@@ -140,7 +142,6 @@ public class RocketScheduleRuntime {
             //only reached when your already on target
             state = State.IN_TRANSIT;
             destinationReached();
-            System.out.println("already at destination");
             return;
         }
         if (rocket.startNavigation(nextPath) != TBD) {
@@ -154,7 +155,7 @@ public class RocketScheduleRuntime {
         for (int i = 0; i < conditions.size(); i++) {
             List<ScheduleWaitCondition> list = conditions.get(i);
             if (conditionProgress.size() <= i) {
-                System.out.println("error with conditions");
+                CreatingSpace.LOGGER.warn("rocket entity of id {} located at {} had an index out of bound for condition", rocket.getId(),rocket.position());
                 rocket.disassemble();
                 return;
             }

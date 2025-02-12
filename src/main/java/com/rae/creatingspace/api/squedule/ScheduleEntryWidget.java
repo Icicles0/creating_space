@@ -11,5 +11,5 @@ public class ScheduleEntryWidget extends AbstractSimiWidget {
 
     private static final int CARD_HEADER = 22;
     private static final int CARD_WIDTH = 195;
-    //to do latter
+    //TODO cut this into 2 widgets : 1 for the conditions, and one for the instruction
 }
