@@ -28,7 +28,10 @@
     "depth": "creatingspace:moon/depth",
     "ridges": "creatingspace:moon/ridges",
     "initial_density_without_jaggedness": 0,
-    "final_density": "creatingspace:moon/depth",
+    "final_density": {
+      "type": "minecraft:interpolated",
+      "argument": "creatingspace:moon/depth"
+    },
     "vein_toggle": 0,
     "vein_ridged": 0,
     "vein_gap": 0
