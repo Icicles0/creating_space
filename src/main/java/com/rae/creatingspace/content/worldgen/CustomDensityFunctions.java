@@ -51,5 +51,9 @@ public class CustomDensityFunctions {
         public @NotNull KeyDispatchDataCodec<? extends DensityFunction> codec() {
             return CODEC;
         }
+
+        public void setSeed(long seed) {
+            noise.setSeed(seed);
+        }
     }
 }
