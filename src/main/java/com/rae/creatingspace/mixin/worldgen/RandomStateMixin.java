@@ -23,7 +23,7 @@ public class RandomStateMixin {
     @Inject(method = "<init>",at = @At(value = "RETURN"))
     private void provideNoise(NoiseGeneratorSettings p_224556_, Registry p_224557_, long seed, CallbackInfo ci){
         class NoiseWiringHelper implements DensityFunction.Visitor {
-            private final Map<DensityFunction, DensityFunction> wrapped = new HashMap();
+            private final Map<DensityFunction, DensityFunction> wrapped = new HashMap<>();
 
             NoiseWiringHelper() {
             }
