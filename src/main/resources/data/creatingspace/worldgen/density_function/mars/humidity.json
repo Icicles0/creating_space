@@ -1,0 +1,6 @@
+{
+  "type": "minecraft:noise",
+  "noise": "creatingspace:mars/humidity.json",
+  "xz_scale": 1,
+  "y_scale": 1
+}
