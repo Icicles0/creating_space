@@ -59,9 +59,9 @@
       "shift_y": 0,
       "shift_z": "minecraft:shift_z"
     },
-    "continents": "minecraft:overworld/continents",
-    "erosion": "minecraft:overworld/erosion",
-    "depth": "minecraft:overworld/depth",
+    "continents": "creatingspace:mars/humidity",
+    "erosion": "creatingspace:mars/erosion",
+    "depth": "creatingspace:mars/depth",
     "ridges": "minecraft:overworld/ridges",
     "initial_density_without_jaggedness": {
       "type": "minecraft:add",
@@ -105,7 +105,7 @@
                         "type": "minecraft:quarter_negative",
                         "argument": {
                           "type": "minecraft:mul",
-                          "argument1": "minecraft:overworld/depth",
+                          "argument1": "creatingspace:mars/depth",
                           "argument2": {
                             "type": "minecraft:cache_2d",
                             "argument": "minecraft:overworld/factor"
@@ -166,12 +166,12 @@
                           "argument1": 0.078125,
                           "argument2": {
                             "type": "minecraft:range_choice",
-                            "input": "creatingspace:moon/slopped_cheese",
+                            "input": "creatingspace:mars/depth",
                             "min_inclusive": -1000000,
                             "max_exclusive": 1.5625,
                             "when_in_range": {
                               "type": "minecraft:min",
-                              "argument1": "creatingspace:moon/slopped_cheese",
+                              "argument1": "creatingspace:mars/depth",
                               "argument2": {
                                 "type": "minecraft:mul",
                                 "argument1": 5,
@@ -224,7 +224,7 @@
                                           "argument2": {
                                             "type": "minecraft:mul",
                                             "argument1": -0.64,
-                                            "argument2": "creatingspace:moon/slopped_cheese"
+                                            "argument2": "creatingspace:mars/depth"
                                           }
                                         },
                                         "min": 0,
